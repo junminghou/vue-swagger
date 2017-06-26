@@ -48,7 +48,16 @@
               {{element.required}}
             </el-col>
           </el-row>
-          <el-button type="primary" @click="onSubmit">执行</el-button>
+          <el-button type="danger" @click="onClear">清空</el-button>
+          <el-button type="primary" @click="onSubmit">实体</el-button>
+          <el-checkbox label="实体注释" v-model="annotation" name="type"></el-checkbox>
+        </div>
+
+        <div v-html="renderResults">
+
+        </div>
+        <div v-html="renderResults">
+
         </div>
       </el-col>
     </el-row>
@@ -74,7 +83,9 @@ export default {
         { key: 'checkbox', value: '复选框' },
         { key: 'datepicker', value: '日期框' },
         { key: 'textarea', value: '多文本' }
-      ]
+      ],
+      annotation: false,
+      renderResults: ''
     }
   },
   methods: {
@@ -119,7 +130,11 @@ export default {
         }
       }
     },
+    onClear() {
+      this.renderResults = ''
+    },
     onSubmit() {
+      this.renderResults = this.renderEntity()
       const url = '/api/getLocalFile'
       return axios.get(url, {
         params: { filename: 'entityTemplate' }
@@ -127,6 +142,24 @@ export default {
         console.log(res.data)
         return Promise.resolve(res.data)
       })
+    },
+    renderEntity() {
+      var me = this
+      var template1 = '<div>key:value,   annotation</div> '
+      var result = ''
+      this.elements.forEach(function (element) {
+        var replaceStr = template1.replace(/key/, element.name)
+        replaceStr = replaceStr.replace(/value/, 'null')
+        if (me.annotation) {
+          replaceStr = replaceStr.replace(/annotation/, '// ' + element.description)
+        } else {
+          replaceStr = replaceStr.replace(/annotation/, '')
+        }
+        replaceStr += '</ br>'
+        result += replaceStr
+      }, this)
+      console.log(result)
+      return '{' + result + '}'
     },
     getJson() {
       const me = this

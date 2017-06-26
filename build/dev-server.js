@@ -11,7 +11,6 @@ var express = require('express')
 var webpack = require('webpack')
 var proxyMiddleware = require('http-proxy-middleware')
 var webpackConfig = require('./webpack.dev.conf')
-var axios = require('axios')
 
 // default port where dev server listens for incoming traffic
 var port = process.env.PORT || config.dev.port
@@ -27,20 +26,29 @@ var compiler = webpack(webpackConfig)
 var apiRoutes = express.Router()
 apiRoutes.get('/getLocalFile',function(req,res){
   try {
-    var appData = require('../src/'+ req.query.filename +'.txt')
+    var appData = require('../src/'+ req.query.filename +'.json')
 
     res.json({
       errno:0,
-      data: "'" + appData + "'"
-    });
+      data: appData
+    })
   } catch(e){
     console.log(e)
     res.json({
       errno: 1,
       message: e
-    });
+    })
   }
 })
+
+// 请求的例子：
+// const url = '/api/getLocalFile'
+// return axios.get(url, {
+//   params: { filename: 'entityTemplate' }
+// }).then((res) => {
+//   console.log(res.data)
+//   return Promise.resolve(res.data)
+// })
 
 app.use('/api', apiRoutes)
 
