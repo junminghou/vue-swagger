@@ -91,6 +91,9 @@ export default {
     }
   },
   created() {
+    var inputUrl = sessionStorage.getItem('inputUrl')
+    this.input = inputUrl
+
     var leftList = sessionStorage.getItem('leftList')
     this.tags = JSON.parse(leftList)
 
@@ -170,6 +173,7 @@ export default {
     },
     getJson() {
       const me = this
+      sessionStorage.setItem('inputUrl', me.input)
 
       axios.get(me.input)
         .then(function (response) {
