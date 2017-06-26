@@ -50,6 +50,7 @@
           </el-row>
           <el-button type="danger" @click="onClear">清空</el-button>
           <el-button type="primary" @click="onSubmit">实体</el-button>
+          <el-button type="primary" @click="onSubmit">新的1</el-button>
           <el-checkbox label="实体注释" v-model="annotation" name="type"></el-checkbox>
         </div>
 
@@ -70,6 +71,7 @@ import axios from 'axios'
 
 export default {
   name: 'hello',
+
   data() {
     return {
       input: 'http://fangapi.dev.apitops.com/building-center-web/api/v1/swagger.json',
@@ -87,6 +89,16 @@ export default {
       annotation: false,
       renderResults: ''
     }
+  },
+  created() {
+    var leftList = sessionStorage.getItem('leftList')
+    this.tags = JSON.parse(leftList)
+
+    var rightForm = sessionStorage.getItem('rightForm')
+    this.elements = JSON.parse(rightForm)
+
+    var swaggerJson = sessionStorage.getItem('swaggerJson')
+    this.resData = JSON.parse(swaggerJson)
   },
   methods: {
     loadForm(entity) {
@@ -129,19 +141,14 @@ export default {
           })
         }
       }
+
+      sessionStorage.setItem('rightForm', JSON.stringify(result))
     },
     onClear() {
       this.renderResults = ''
     },
     onSubmit() {
       this.renderResults = this.renderEntity()
-      const url = '/api/getLocalFile'
-      return axios.get(url, {
-        params: { filename: 'entityTemplate' }
-      }).then((res) => {
-        console.log(res.data)
-        return Promise.resolve(res.data)
-      })
     },
     renderEntity() {
       var me = this
@@ -199,6 +206,8 @@ export default {
             }
           }
           me.tags = tags
+          sessionStorage.setItem('swaggerJson', JSON.stringify(me.resData))
+          sessionStorage.setItem('leftList', JSON.stringify(tags))
         })
     }
   }
