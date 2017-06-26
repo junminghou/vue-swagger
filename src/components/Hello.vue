@@ -14,10 +14,10 @@
       <el-col :span="6">
 
         <el-menu mode="vertical" theme="dark" default-active="1">
-          <el-menu-item-group v-for="(tag,parentIdx) in tags">
+          <el-menu-item-group v-for="(tag,parentIdx) in tags" :key="tag.name">
             <template slot="title">
               <i class="el-icon-star-off"></i> {{tag.name}}</template>
-            <el-menu-item v-bind:index="{index:parentIdx + childIdx}" v-for="(entity,childIdx) in tag.paths" @click="loadForm(entity)">
+            <el-menu-item v-bind:index="{index:parentIdx + childIdx}" v-for="(entity,childIdx) in tag.paths" :key="tag.name + entity.type" @click="loadForm(entity)">
               <div>
                 <span>{{ entity.type }}</span>
                 <span> {{ entity.short_path }}</span>
@@ -32,13 +32,13 @@
 
       <el-col :span="18">
         <div class="border-style" v-if="elements.length > 0">
-          <el-row :gutter="20" v-for="element in elements">
+          <el-row :gutter="20" v-for="element in elements" :key="element.name">
             <el-col :span="6">
               {{element.name}}
             </el-col>
             <el-col :span="6">
               <el-select v-model="element.selected">
-                <el-option v-for="option in options" :value="option.key" :label="option.value"></el-option>
+                <el-option v-for="option in options" :key="option.key" :value="option.key" :label="option.value"></el-option>
               </el-select>
             </el-col>
             <el-col :span="6">
@@ -50,22 +50,24 @@
           </el-row>
           <el-button type="danger" @click="onClear">清空</el-button>
           <el-button type="primary" @click="onSubmit">实体</el-button>
-          <el-button type="primary" @click="onSubmit">新的1</el-button>
+          <el-button type="primary" @click="onSubmit2">新的1</el-button>
           <el-checkbox label="实体注释" v-model="annotation" name="type"></el-checkbox>
         </div>
 
-        <div v-html="renderResults">
-
-        </div>
-        <div v-if="elements.length > 0" v-for="element in elements">
-          &lt;div class="form-group"&gt;
-                &lt;label class="control-label col-sm-2"&gt;{{element.description}}：&lt;/label&gt;
-                &lt;div class="col-sm-4"&gt;
-                    &lt;input type="text" name="{{element.name}}" id="{{element.name}}" class="form-control" placeholder="请输入{{element.description}}" /&gt;
-                &lt;/div&gt;
-            &lt;/div&gt;
+        <div v-if="isShowHtml">
+          <div id="renderResults1" v-for="element in elements" v-bind:key="element.name">
+            {{element.name}}:null, // {{element.description}}
+          </div>
         </div>
 
+        <div v-if="isShowHtml">
+          <div id="renderResults2" v-for="element in elements" v-bind:key="element.name">
+            &lt;div class="form-group"&gt; &lt;label class="control-label col-sm-2"&gt;{{element.description}}：&lt;/label&gt; &lt;div class="col-sm-4"&gt; &lt;input type="text" name="{{element.name}}" id="{{element.name}}" class="form-control" placeholder="请输入{{element.description}}" /&gt; &lt;/div&gt; &lt;/div&gt;
+          </div>
+        </div>
+
+        <el-input type="textarea" :rows="10" placeholder="" v-model="htmlData">
+        </el-input>
       </el-col>
     </el-row>
 
@@ -93,12 +95,16 @@ export default {
         { key: 'textarea', value: '多文本' }
       ],
       annotation: false,
-      renderResults: ''
+      renderResults: '',
+      isShowHtml: false,
+      htmlData: ''
     }
   },
   created() {
     var inputUrl = sessionStorage.getItem('inputUrl')
-    this.input = inputUrl
+    if (inputUrl !== null && inputUrl !== undefined && inputUrl !== '') {
+      this.input = inputUrl
+    }
 
     var leftList = sessionStorage.getItem('leftList')
     this.tags = JSON.parse(leftList)
@@ -153,29 +159,12 @@ export default {
 
       sessionStorage.setItem('rightForm', JSON.stringify(result))
     },
-    onClear() {
-      this.renderResults = ''
-    },
     onSubmit() {
-      this.renderResults = this.renderEntity()
+      // this.htmlData = (document.getElementById('renderResults1').outerHTML())
+      console.log(document.getElementById('renderResults1'))
     },
-    renderEntity() {
-      var me = this
-      var template1 = '<div>key:value,   annotation</div> '
-      var result = ''
-      this.elements.forEach(function (element) {
-        var replaceStr = template1.replace(/key/, element.name)
-        replaceStr = replaceStr.replace(/value/, 'null')
-        if (me.annotation) {
-          replaceStr = replaceStr.replace(/annotation/, '// ' + element.description)
-        } else {
-          replaceStr = replaceStr.replace(/annotation/, '')
-        }
-        replaceStr += '</ br>'
-        result += replaceStr
-      }, this)
-      console.log(result)
-      return '{' + result + '}'
+    onSubmit2() {
+      this.htmlData = (document.getElementById('renderResults2').outerHTML())
     },
     getJson() {
       const me = this
