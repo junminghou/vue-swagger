@@ -63,11 +63,21 @@
 
         <div style="display:none;">
           <div ref="renderResults2" v-for="element in elements" v-bind:key="element.name">
-            &lt;div class="form-group"&gt; &lt;label class="control-label col-sm-2"&gt;{{element.description}}：&lt;/label&gt; &lt;div class="col-sm-4"&gt; &lt;input type="text" name="{{element.name}}" id="{{element.name}}" class="form-control" placeholder="请输入{{element.description}}" /&gt; &lt;/div&gt; &lt;/div&gt;
+            &lt;div class="form-group"&gt;
+              &lt;label class="control-label col-sm-2"&gt;{{element.description}}：&lt;/label&gt;
+              &lt;div class="col-sm-4"&gt;
+                <template v-if="element.selected=='text'">
+                &lt;input type="text" name="{{element.name}}" id="{{element.name}}" class="form-control" placeholder="请输入{{element.description}}" /&gt;
+                </template>
+                <template v-if="element.selected=='datetime'">
+
+                </template>
+              &lt;/div&gt;
+            &lt;/div&gt;
           </div>
         </div>
 
-        <el-input type="textarea" :rows="10" placeholder="" v-model="htmlData">
+        <el-input type="textarea" :rows="10" placeholder="" v-model="htmlData" >
         </el-input>
       </el-col>
     </el-row>
