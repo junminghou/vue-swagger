@@ -7,6 +7,7 @@
       </el-col>
       <el-col :span="8">
         <el-button type="primary" @click="getJson()">确定</el-button>
+        <el-button type="primary" @click="clearSession()">清会话</el-button>
       </el-col>
     </el-row>
     <h3></h3>
@@ -14,13 +15,13 @@
       <el-col :span="6">
 
         <el-menu mode="vertical" theme="dark" default-active="1">
-          <el-menu-item-group v-for="(tag,parentIdx) in tags" :key="tag.name">
+          <el-menu-item-group v-for="(tag,parentIndex) in tags" :key="tag.name">
             <template slot="title">
               <i class="el-icon-star-off"></i> {{tag.name}}</template>
-            <el-menu-item v-bind:index="{index:parentIdx + childIdx}" v-for="(entity,childIdx) in tag.paths" :key="tag.name + entity.type" @click="loadForm(entity)">
+            <el-menu-item v-bind:index="entity.index" v-for="(entity,childIndex) in tag.paths" :key="tag.name + entity.type" @click="loadForm(entity)">
               <div>
                 <span>{{ entity.type }}</span>
-                <span> {{ entity.short_path }}</span>
+                <span> {{ entity.short_path }} </span>
               </div>
               <div>
                 {{ entity.summary }}
@@ -54,14 +55,14 @@
           <el-checkbox label="实体注释" v-model="annotation" name="type"></el-checkbox>
         </div>
 
-        <div v-if="isShowHtml">
-          <div id="renderResults1" v-for="element in elements" v-bind:key="element.name">
+        <div style="display:none;">
+          <div ref="renderResults1" v-for="element in elements" v-bind:key="element.name">
             {{element.name}}:null, // {{element.description}}
           </div>
         </div>
 
-        <div v-if="isShowHtml">
-          <div id="renderResults2" v-for="element in elements" v-bind:key="element.name">
+        <div style="display:none;">
+          <div ref="renderResults2" v-for="element in elements" v-bind:key="element.name">
             &lt;div class="form-group"&gt; &lt;label class="control-label col-sm-2"&gt;{{element.description}}：&lt;/label&gt; &lt;div class="col-sm-4"&gt; &lt;input type="text" name="{{element.name}}" id="{{element.name}}" class="form-control" placeholder="请输入{{element.description}}" /&gt; &lt;/div&gt; &lt;/div&gt;
           </div>
         </div>
@@ -96,8 +97,13 @@ export default {
       ],
       annotation: false,
       renderResults: '',
-      isShowHtml: false,
+      isShowHtml: true,
       htmlData: ''
+    }
+  },
+  props: {
+    index: {
+      type: Number
     }
   },
   created() {
@@ -105,17 +111,28 @@ export default {
     if (inputUrl !== null && inputUrl !== undefined && inputUrl !== '') {
       this.input = inputUrl
     }
-
     var leftList = sessionStorage.getItem('leftList')
-    this.tags = JSON.parse(leftList)
-
+    if (leftList !== null && leftList !== undefined && leftList !== '') {
+      this.tags = JSON.parse(leftList)
+    }
     var rightForm = sessionStorage.getItem('rightForm')
-    this.elements = JSON.parse(rightForm)
-
+    if (rightForm !== null && rightForm !== undefined && rightForm !== '') {
+      this.elements = JSON.parse(rightForm)
+    }
     var swaggerJson = sessionStorage.getItem('swaggerJson')
-    this.resData = JSON.parse(swaggerJson)
+    if (swaggerJson !== null && swaggerJson !== undefined && swaggerJson !== '') {
+      this.resData = JSON.parse(swaggerJson)
+    }
   },
   methods: {
+    onClear() {
+    },
+    clearSession() {
+      sessionStorage.removeItem('inputUrl')
+      sessionStorage.removeItem('leftList')
+      sessionStorage.removeItem('rightForm')
+      sessionStorage.removeItem('swaggerJson')
+    },
     loadForm(entity) {
       this.elements = []
       var result = this.elements
@@ -160,11 +177,12 @@ export default {
       sessionStorage.setItem('rightForm', JSON.stringify(result))
     },
     onSubmit() {
-      // this.htmlData = (document.getElementById('renderResults1').outerHTML())
-      console.log(document.getElementById('renderResults1'))
+      console.log(this.$refs.renderResults1)
+      this.htmlData = this.$refs.renderResults1[0].innerText
     },
     onSubmit2() {
-      this.htmlData = (document.getElementById('renderResults2').outerHTML())
+      this.htmlData = this.$refs.renderResults2[0].innerText
+      console.log(this.$refs.renderResults2)
     },
     getJson() {
       const me = this
@@ -176,6 +194,7 @@ export default {
           var data = response.data
           var tags = data.tags
           var paths = data.paths
+          var index = 0
           for (var i = 0; i < tags.length; i++) {
             var tag = tags[i]
             tag.paths = []
@@ -197,7 +216,8 @@ export default {
                     path: key,
                     short_path: key.split('/')[2],
                     type: type,
-                    summary: summary
+                    summary: summary,
+                    index: ++index
                   }
                   tag.paths.push(tagPath)
                 }
