@@ -57,9 +57,15 @@
         <div v-html="renderResults">
 
         </div>
-        <div v-html="renderResults">
-
+        <div v-if="elements.length > 0" v-for="element in elements">
+          &lt;div class="form-group"&gt;
+                &lt;label class="control-label col-sm-2"&gt;{{element.description}}：&lt;/label&gt;
+                &lt;div class="col-sm-4"&gt;
+                    &lt;input type="text" name="{{element.name}}" id="{{element.name}}" class="form-control" placeholder="请输入{{element.description}}" /&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
         </div>
+
       </el-col>
     </el-row>
 
