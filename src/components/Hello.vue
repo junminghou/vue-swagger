@@ -55,6 +55,9 @@
           <el-checkbox label="实体注释" v-model="annotation" name="type"></el-checkbox>
         </div>
 
+        <el-input type="textarea" :rows="10" placeholder="" v-model="filterPageKeys">
+        </el-input>
+
         <div style="display:none;">
           <div ref="renderResults1" v-for="element in elements" v-bind:key="element.name">
             {{element.name}}:null, // {{element.description}}
@@ -62,22 +65,12 @@
         </div>
 
         <div style="display:none;">
-          <div ref="renderResults2" v-for="element in elements" v-bind:key="element.name">
-            &lt;div class="form-group"&gt;
-              &lt;label class="control-label col-sm-2"&gt;{{element.description}}：&lt;/label&gt;
-              &lt;div class="col-sm-4"&gt;
-                <template v-if="element.selected=='text'">
-                &lt;input type="text" name="{{element.name}}" id="{{element.name}}" class="form-control" placeholder="请输入{{element.description}}" /&gt;
-                </template>
-                <template v-if="element.selected=='datetime'">
-
-                </template>
-              &lt;/div&gt;
-            &lt;/div&gt;
+          <div ref="renderResults2" :title="element.description" v-for="element in elements" v-bind:key="element.name">
+            &lt;div class="form-group" &gt; &lt;label class="control-label col-sm-2"&gt;{{element.description}}：&lt;/label&gt; &lt;div class="col-sm-4"&gt; &lt;input type="text" name="{{element.name}}" id="{{element.name}}" class="form-control" placeholder="请输入{{element.description}}" /&gt; &lt;/div&gt; &lt;/div&gt;
           </div>
         </div>
 
-        <el-input type="textarea" :rows="10" placeholder="" v-model="htmlData" >
+        <el-input type="textarea" :rows="10" placeholder="" v-model="htmlData">
         </el-input>
       </el-col>
     </el-row>
@@ -108,7 +101,8 @@ export default {
       annotation: false,
       renderResults: '',
       isShowHtml: true,
-      htmlData: ''
+      htmlData: '',
+      filterPageKeys: ''
     }
   },
   props: {
@@ -191,7 +185,24 @@ export default {
       this.htmlData = this.$refs.renderResults1[0].innerText
     },
     onSubmit2() {
-      this.htmlData = this.$refs.renderResults2[0].innerText
+      var keys = []
+      if (this.filterPageKeys !== '' && this.filterPageKeys.length > 0) {
+        keys = this.filterPageKeys.split('\n')
+      }
+      var str = ''
+      var divArray = this.$refs.renderResults2
+      for (var i = 0; i < divArray.length; i++) {
+        var element = divArray[i]
+        if (keys.length > 0) {
+          if (keys.indexOf(element.title) > -1) {
+            str += element.innerText
+          }
+        } else {
+          str += element.innerText
+        }
+      }
+
+      this.htmlData = str
       console.log(this.$refs.renderResults2)
     },
     getJson() {
