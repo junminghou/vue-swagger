@@ -1,6 +1,6 @@
 # vue-swagger
 
-> A Vue.js project demo
+> A Vue.js project demo-test
 
 ## Build Setup
 
