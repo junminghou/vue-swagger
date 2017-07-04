@@ -51,7 +51,8 @@
           </el-row>
           <el-button type="danger" @click="onClear">清空</el-button>
           <el-button type="primary" @click="onSubmit">实体</el-button>
-          <el-button type="primary" @click="onSubmit2">新的1</el-button>
+          <el-button type="primary" @click="onSubmit2">编辑</el-button>
+          <el-button type="primary" @click="onSubmit3">详情</el-button>
           <el-checkbox label="实体注释" v-model="annotation" name="type"></el-checkbox>
         </div>
 
@@ -67,6 +68,12 @@
         <div style="display:none;">
           <div ref="renderResults2" :title="element.description" v-for="element in elements" v-bind:key="element.name">
             &lt;div class="form-group" &gt; &lt;label class="control-label col-sm-2"&gt;{{element.description}}：&lt;/label&gt; &lt;div class="col-sm-4"&gt; &lt;input type="text" name="{{element.name}}" id="{{element.name}}" class="form-control" placeholder="请输入{{element.description}}" /&gt; &lt;/div&gt; &lt;/div&gt;
+          </div>
+        </div>
+
+        <div style="display:none;">
+          <div ref="renderResults3" :title="element.description" v-for="element in elements" v-bind:key="element.name">
+            &lt;li&gt; &lt;span class="title"&gt;{{element.description}}：&lt;/span&gt; &lt;span class="content"&gt;{{element.nameformat}}&lt;/span&gt; &lt;/li&gt;
           </div>
         </div>
 
@@ -151,7 +158,8 @@ export default {
             description: element.description,
             selected: 'text',
             required: element.required,
-            type: element.type
+            type: element.type,
+            nameformat: '{{' + propertyKey + '}}'
           })
         }
       } else if (data != null && data.hasOwnProperty('post')) {
@@ -173,7 +181,8 @@ export default {
             description: propertyValue.description,
             selected: selected,
             required: required,
-            type: type
+            type: type,
+            nameformat: '{{' + propertyKey + '}}'
           })
         }
       }
@@ -191,14 +200,39 @@ export default {
       }
       var str = ''
       var divArray = this.$refs.renderResults2
-      for (var i = 0; i < divArray.length; i++) {
-        var element = divArray[i]
-        if (keys.length > 0) {
-          if (keys.indexOf(element.title) > -1) {
+
+      for (var j = 0; j < keys.length; j++) {
+        var key = keys[j]
+
+        for (var i = 0; i < divArray.length; i++) {
+          var element = divArray[i]
+
+          if (element.title.indexOf(key) > -1 || key.indexOf(element.title) > -1) {
             str += element.innerText
           }
-        } else {
-          str += element.innerText
+        }
+      }
+
+      this.htmlData = str
+      console.log(this.$refs.renderResults2)
+    },
+    onSubmit3() {
+      var keys = []
+      if (this.filterPageKeys !== '' && this.filterPageKeys.length > 0) {
+        keys = this.filterPageKeys.split('\n')
+      }
+      var str = ''
+      var divArray = this.$refs.renderResults3
+
+      for (var j = 0; j < keys.length; j++) {
+        var key = keys[j]
+
+        for (var i = 0; i < divArray.length; i++) {
+          var element = divArray[i]
+
+          if (element.title.indexOf(key) > -1 || key.indexOf(element.title) > -1) {
+            str += element.innerText
+          }
         }
       }
 
