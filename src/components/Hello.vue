@@ -12,7 +12,7 @@
     </el-row>
     <h3></h3>
     <el-row>
-      <el-col :span="6">
+      <el-col :span="7">
 
         <el-menu mode="vertical" theme="dark" default-active="1">
           <el-submenu :index="parentIndex" v-for="(tag,parentIndex) in tags" :key="tag.name">
@@ -32,7 +32,7 @@
         </el-menu>
       </el-col>
 
-      <el-col :span="18">
+      <el-col :span="17">
         <div class="border-style" v-if="elements.length > 0">
           <el-row :gutter="20" v-for="element in elements" :key="element.name">
             <el-col :span="6">
@@ -154,13 +154,9 @@ export default {
         params = data.get.parameters
         for (var i = 0; i < params.length; i++) {
           var element = params[i]
-          var description2 = element.description
-          if (element.description === null || element.description === '' || element.definitions === undefined) {
-            description2 = '无'
-          }
           result.push({
             name: element.name,
-            description: description2,
+            description: element.description,
             selected: 'text',
             required: element.required,
             type: element.type,
@@ -181,13 +177,9 @@ export default {
             selected = 'datepicker'
           }
           var required = (requireds.indexOf(propertyKey) > -1) ? propertyKey : '0'
-          var description = propertyValue.description
-          if (propertyValue.description === null || propertyValue.description === '' || propertyValue.definitions === undefined) {
-            description = '无'
-          }
           result.push({
             name: propertyKey,
-            description: description,
+            description: propertyValue.description,
             selected: selected,
             required: required,
             type: type,
@@ -274,6 +266,12 @@ export default {
                   } else if (path.hasOwnProperty('post')) {
                     type = 'Post'
                     summary = path.post.summary
+                  } else if (path.hasOwnProperty('put')) {
+                    type = 'Put'
+                    summary = path.put.summary
+                  } else if (path.hasOwnProperty('delete')) {
+                    type = 'Del'
+                    summary = path.delete.summary
                   }
                   if (summary === '' || summary === undefined || summary === null) {
                     summary = '无描述'
@@ -315,6 +313,11 @@ export default {
   height: 50px;
   padding-top: 1px;
   padding-left: 12px !important;
+}
+
+.hello .el-submenu__title {
+  height: 48px;
+  line-height: 48px;
 }
 
 .hello .el-menu-item div {
