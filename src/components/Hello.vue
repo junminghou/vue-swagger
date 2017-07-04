@@ -15,19 +15,18 @@
       <el-col :span="6">
 
         <el-menu mode="vertical" theme="dark" default-active="1">
-          <el-menu-item-group v-for="(tag,parentIndex) in tags" :key="tag.name">
-            <template slot="title">
-              <i class="el-icon-star-off"></i> {{tag.name}}</template>
-            <el-menu-item v-bind:index="entity.index" v-for="(entity,childIndex) in tag.paths" :key="tag.name + entity.type" @click="loadForm(entity)">
-              <div>
-                <span>{{ entity.type }}</span>
-                <span> {{ entity.short_path }} </span>
-              </div>
-              <div>
-                {{ entity.summary }}
-              </div>
-            </el-menu-item>
-          </el-menu-item-group>
+          <el-submenu :index="parentIndex" v-for="(tag,parentIndex) in tags" :key="tag.name">
+              <template slot="title"><i class="el-icon-star-on"></i> {{tag.name}}</template>
+              <el-menu-item v-bind:index="entity.index" v-for="(entity,childIndex) in tag.paths" :key="tag.name + entity.type" @click="loadForm(entity)">
+                <div>
+                  <span>{{ entity.type }}</span>
+                  <span> {{ entity.short_path }} </span>
+                </div>
+                <div>
+                  {{ entity.summary }}
+                </div>
+              </el-menu-item>
+          </el-submenu>
         </el-menu>
       </el-col>
 
