@@ -33,53 +33,66 @@
       </el-col>
 
       <el-col :span="17">
-        <div class="border-style" v-if="elements.length > 0">
-          <el-row :gutter="20" v-for="element in elements" :key="element.name">
-            <el-col :span="6">
-              {{element.name}}
-            </el-col>
-            <el-col :span="6">
-              <el-select v-model="element.selected">
-                <el-option v-for="option in options" :key="option.key" :value="option.key" :label="option.value"></el-option>
-              </el-select>
-            </el-col>
-            <el-col :span="6">
-              {{element.description}}
-            </el-col>
-            <el-col :span="6">
-              {{element.required}}
-            </el-col>
-          </el-row>
-          <el-button type="danger" @click="onClear">清空</el-button>
-          <el-button type="primary" @click="onSubmit">实体</el-button>
-          <el-button type="primary" @click="onSubmit2">编辑</el-button>
-          <el-button type="primary" @click="onSubmit3">详情</el-button>
-          <el-checkbox label="实体注释" v-model="annotation" name="type"></el-checkbox>
-        </div>
+        <el-tabs v-model="activeName" @tab-click="handleClick">
+          <el-tab-pane label="配置管理" name="first">
+            <div class="border-style" v-if="elements.length > 0">
+              <el-row :gutter="20" v-for="element in elements" :key="element.name">
+                <el-col :span="6" v-if="element.required === '0'">
+                  {{element.name}}
+                </el-col>
+                <el-col :span="6" v-if="element.required !== '0'">
+                  <span style="color:red;">{{element.name}}</span>
+                </el-col>
+                <el-col :span="6">
+                  <el-select v-model="element.selected">
+                    <el-option v-for="option in options" :key="option.key" :value="option.key" :label="option.value"></el-option>
+                  </el-select>
+                </el-col>
+                <el-col :span="6">
+                  {{element.description}}
+                </el-col>
+                <el-col :span="6">
 
-        <el-input type="textarea" :rows="10" placeholder="" v-model="filterPageKeys">
-        </el-input>
+                </el-col>
+              </el-row>
+            </div>
 
-        <div style="display:none;">
-          <div ref="renderResults1" v-for="element in elements" v-bind:key="element.name">
-            {{element.name}}:null, // {{element.description}}
-          </div>
-        </div>
+          </el-tab-pane>
+          <el-tab-pane label="校验生成" name="second">
+            <div>
+              <el-button type="danger" @click="onClear">清空</el-button>
+              <el-button type="primary" @click="onSubmit">实体</el-button>
+              <el-button type="primary" @click="onSubmit2">编辑</el-button>
+              <el-button type="primary" @click="onSubmit3">详情</el-button>
+              <el-checkbox label="实体注释" v-model="annotation" name="type"></el-checkbox>
+            </div>
+            <el-input type="textarea" :rows="10" placeholder="" v-model="filterPageKeys">
+            </el-input>
 
-        <div style="display:none;">
-          <div ref="renderResults2" :title="element.description" v-for="element in elements" v-bind:key="element.name">
-            &lt;div class="form-group" &gt; &lt;label class="control-label col-sm-2"&gt;{{element.description}}：&lt;/label&gt; &lt;div class="col-sm-4"&gt; &lt;input type="text" name="{{element.name}}" id="{{element.name}}" class="form-control" placeholder="请输入{{element.description}}" /&gt; &lt;/div&gt; &lt;/div&gt;
-          </div>
-        </div>
+            <div style="display:none;">
+              <div ref="renderResults1" v-for="element in elements" v-bind:key="element.name">
+                {{element.name}}:null, // {{element.description}}
+              </div>
+            </div>
 
-        <div style="display:none;">
-          <div ref="renderResults3" :title="element.description" v-for="element in elements" v-bind:key="element.name">
-            &lt;li&gt; &lt;span class="title"&gt;{{element.description}}：&lt;/span&gt; &lt;span class="content"&gt;{{element.nameformat}}&lt;/span&gt; &lt;/li&gt;
-          </div>
-        </div>
+            <div style="display:none;">
+              <div ref="renderResults2" :title="element.description" v-for="element in elements" v-bind:key="element.name">
+                &lt;div class="form-group" &gt; &lt;label class="control-label col-sm-2"&gt;{{element.description}}：&lt;/label&gt; &lt;div class="col-sm-4"&gt; &lt;input type="text" name="{{element.name}}" id="{{element.name}}" class="form-control" placeholder="请输入{{element.description}}" /&gt; &lt;/div&gt; &lt;/div&gt;
+              </div>
+            </div>
 
-        <el-input type="textarea" :rows="10" placeholder="" v-model="htmlData">
-        </el-input>
+            <div style="display:none;">
+              <div ref="renderResults3" :title="element.description" v-for="element in elements" v-bind:key="element.name">
+                &lt;li&gt; &lt;span class="title"&gt;{{element.description}}：&lt;/span&gt; &lt;span class="content"&gt;{{element.nameformat}}&lt;/span&gt; &lt;/li&gt;
+              </div>
+            </div>
+
+            <el-input type="textarea" :rows="10" placeholder="" v-model="htmlData">
+            </el-input>
+
+          </el-tab-pane>
+        </el-tabs>
+
       </el-col>
     </el-row>
 
@@ -110,7 +123,8 @@ export default {
       renderResults: '',
       isShowHtml: true,
       htmlData: '',
-      filterPageKeys: ''
+      filterPageKeys: '',
+      activeName: 'first'
     }
   },
   props: {
