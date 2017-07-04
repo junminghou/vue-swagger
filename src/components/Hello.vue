@@ -16,16 +16,18 @@
 
         <el-menu mode="vertical" theme="dark" default-active="1">
           <el-submenu :index="parentIndex" v-for="(tag,parentIndex) in tags" :key="tag.name">
-              <template slot="title"><i class="el-icon-star-on"></i> {{tag.name}}</template>
-              <el-menu-item v-bind:index="entity.index" v-for="(entity,childIndex) in tag.paths" :key="tag.name + entity.type" @click="loadForm(entity)">
-                <div>
-                  <span>{{ entity.type }}</span>
-                  <span> {{ entity.short_path }} </span>
-                </div>
-                <div>
-                  {{ entity.summary }}
-                </div>
-              </el-menu-item>
+            <template slot="title">
+              <i class="el-icon-star-on"></i> {{tag.name}}</template>
+            <el-menu-item v-bind:index="entity.index" v-for="(entity,childIndex) in tag.paths" :key="tag.name + entity.type" @click="loadForm(entity)">
+              <div>
+                <span>{{ entity.type }}</span>
+                <span> {{ entity.short_path }} </span>
+              </div>
+              <div>
+                <span> </span>
+                <span>{{ entity.summary }}</span>
+              </div>
+            </el-menu-item>
           </el-submenu>
         </el-menu>
       </el-col>
@@ -152,9 +154,13 @@ export default {
         params = data.get.parameters
         for (var i = 0; i < params.length; i++) {
           var element = params[i]
+          var description2 = element.description
+          if (element.description === null || element.description === '' || element.definitions === undefined) {
+            description2 = '无'
+          }
           result.push({
             name: element.name,
-            description: element.description,
+            description: description2,
             selected: 'text',
             required: element.required,
             type: element.type,
@@ -175,9 +181,13 @@ export default {
             selected = 'datepicker'
           }
           var required = (requireds.indexOf(propertyKey) > -1) ? propertyKey : '0'
+          var description = propertyValue.description
+          if (propertyValue.description === null || propertyValue.description === '' || propertyValue.definitions === undefined) {
+            description = '无'
+          }
           result.push({
             name: propertyKey,
-            description: propertyValue.description,
+            description: description,
             selected: selected,
             required: required,
             type: type,
@@ -265,10 +275,17 @@ export default {
                     type = 'Post'
                     summary = path.post.summary
                   }
+                  if (summary === '' || summary === undefined || summary === null) {
+                    summary = '无描述'
+                  }
+
+                  var pathArray = key.split('/')
+                  pathArray.splice(0, 2)
+                  var shortpath = pathArray.join('/')
 
                   var tagPath = {
                     path: key,
-                    short_path: key.split('/')[2],
+                    short_path: shortpath,
                     type: type,
                     summary: summary,
                     index: ++index
@@ -297,6 +314,7 @@ export default {
   line-height: normal;
   height: 50px;
   padding-top: 1px;
+  padding-left: 12px !important;
 }
 
 .hello .el-menu-item div {
@@ -310,6 +328,8 @@ export default {
 
 .hello .el-menu-item div span:first-child {
   color: #1D8CE0;
+  display: inline-block;
+  width: 30px;
 }
 
 .hello .el-menu-item div:last-child {
