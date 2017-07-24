@@ -1,6 +1,6 @@
 <template>
   <div class="hello">
-
+  
     <el-row :gutter="20">
       <el-col :span="16">
         <el-input v-model="input" placeholder="请输入内容"></el-input>
@@ -13,7 +13,7 @@
     <h3></h3>
     <el-row>
       <el-col :span="7">
-
+  
         <el-menu mode="vertical" theme="dark" default-active="1">
           <el-submenu :index="parentIndex" v-for="(tag,parentIndex) in tags" :key="tag.name">
             <template slot="title">
@@ -31,7 +31,7 @@
           </el-submenu>
         </el-menu>
       </el-col>
-
+  
       <el-col :span="17">
         <el-tabs v-model="activeName" @tab-click="handleClick">
           <el-tab-pane label="配置管理" name="first">
@@ -52,11 +52,11 @@
                   {{element.description}}
                 </el-col>
                 <el-col :span="6">
-
+  
                 </el-col>
               </el-row>
             </div>
-
+  
           </el-tab-pane>
           <el-tab-pane label="校验生成" name="second">
             <div>
@@ -68,39 +68,41 @@
             </div>
             <el-input type="textarea" :rows="10" placeholder="" v-model="filterPageKeys">
             </el-input>
-
+  
             <div style="display:none;">
               <div ref="renderResults1" v-for="element in elements" v-bind:key="element.name">
                 {{element.name}}:null, // {{element.description}}
               </div>
             </div>
-
+  
             <div style="display:none;">
               <div ref="renderResults2" :title="element.description" v-for="element in elements" v-bind:key="element.name">
                 &lt;div class="form-group" &gt; &lt;label class="control-label col-sm-2"&gt;{{element.description}}：&lt;/label&gt; &lt;div class="col-sm-4"&gt; &lt;input type="text" name="{{element.name}}" id="{{element.name}}" class="form-control" placeholder="请输入{{element.description}}" /&gt; &lt;/div&gt; &lt;/div&gt;
               </div>
             </div>
-
+  
             <div style="display:none;">
               <div ref="renderResults3" :title="element.description" v-for="element in elements" v-bind:key="element.name">
                 &lt;li&gt; &lt;span class="title"&gt;{{element.description}}：&lt;/span&gt; &lt;span class="content"&gt;{{element.nameformat}}&lt;/span&gt; &lt;/li&gt;
               </div>
             </div>
-
+  
             <el-input type="textarea" :rows="10" placeholder="" v-model="htmlData">
             </el-input>
-
+  
           </el-tab-pane>
         </el-tabs>
-
+  
       </el-col>
     </el-row>
-
+  
   </div>
 </template>
 
 <script>
 import axios from 'axios'
+import { _loadForm, _onSubmit2, _onSubmit3 } from '../business/helloservice'
+import { _created, _clearSession } from '../business/helloinit'
 
 export default {
   name: 'hello',
@@ -133,75 +135,18 @@ export default {
     }
   },
   created() {
-    var inputUrl = sessionStorage.getItem('inputUrl')
-    if (inputUrl !== null && inputUrl !== undefined && inputUrl !== '') {
-      this.input = inputUrl
-    }
-    var leftList = sessionStorage.getItem('leftList')
-    if (leftList !== null && leftList !== undefined && leftList !== '') {
-      this.tags = JSON.parse(leftList)
-    }
-    var rightForm = sessionStorage.getItem('rightForm')
-    if (rightForm !== null && rightForm !== undefined && rightForm !== '') {
-      this.elements = JSON.parse(rightForm)
-    }
-    var swaggerJson = sessionStorage.getItem('swaggerJson')
-    if (swaggerJson !== null && swaggerJson !== undefined && swaggerJson !== '') {
-      this.resData = JSON.parse(swaggerJson)
-    }
+    _created(this)
   },
   methods: {
     onClear() {
     },
     clearSession() {
-      sessionStorage.removeItem('inputUrl')
-      sessionStorage.removeItem('leftList')
-      sessionStorage.removeItem('rightForm')
-      sessionStorage.removeItem('swaggerJson')
+      _clearSession()
     },
     loadForm(entity) {
       this.elements = []
       var result = this.elements
-      var data = this.resData.paths[entity.path]
-      var params = []
-      if (data != null && data.hasOwnProperty('get')) {
-        params = data.get.parameters
-        for (var i = 0; i < params.length; i++) {
-          var element = params[i]
-          result.push({
-            name: element.name,
-            description: element.description,
-            selected: 'text',
-            required: element.required,
-            type: element.type,
-            nameformat: '{{' + propertyKey + '}}'
-          })
-        }
-      } else if (data != null && data.hasOwnProperty('post')) {
-        var refClass = data.post.parameters[0].schema.$ref.split('/')[2]
-        var obj = this.resData.definitions[refClass]
-        var properties = obj.properties
-        var requireds = obj.required || []
-        for (var propertyKey in properties) {
-          var propertyValue = properties[propertyKey]
-          var type = propertyValue.type
-          var selected = 'text'
-          if (propertyValue.format === 'date-time') {
-            type = 'datetime'
-            selected = 'datepicker'
-          }
-          var required = (requireds.indexOf(propertyKey) > -1) ? propertyKey : '0'
-          result.push({
-            name: propertyKey,
-            description: propertyValue.description,
-            selected: selected,
-            required: required,
-            type: type,
-            nameformat: '{{' + propertyKey + '}}'
-          })
-        }
-      }
-
+      _loadForm(result, this.resData, entity.path)
       sessionStorage.setItem('rightForm', JSON.stringify(result))
     },
     onSubmit() {
@@ -209,50 +154,11 @@ export default {
       this.htmlData = this.$refs.renderResults1[0].innerText
     },
     onSubmit2() {
-      var keys = []
-      if (this.filterPageKeys !== '' && this.filterPageKeys.length > 0) {
-        keys = this.filterPageKeys.split('\n')
-      }
-      var str = ''
-      var divArray = this.$refs.renderResults2
-
-      for (var j = 0; j < keys.length; j++) {
-        var key = keys[j]
-
-        for (var i = 0; i < divArray.length; i++) {
-          var element = divArray[i]
-
-          if (element.title.indexOf(key) > -1 || key.indexOf(element.title) > -1) {
-            str += element.innerText
-          }
-        }
-      }
-
-      this.htmlData = str
+      _onSubmit2()
       console.log(this.$refs.renderResults2)
     },
     onSubmit3() {
-      var keys = []
-      if (this.filterPageKeys !== '' && this.filterPageKeys.length > 0) {
-        keys = this.filterPageKeys.split('\n')
-      }
-      var str = ''
-      var divArray = this.$refs.renderResults3
-
-      for (var j = 0; j < keys.length; j++) {
-        var key = keys[j]
-
-        for (var i = 0; i < divArray.length; i++) {
-          var element = divArray[i]
-
-          if (element.title.indexOf(key) > -1 || key.indexOf(element.title) > -1) {
-            str += element.innerText
-          }
-        }
-      }
-
-      this.htmlData = str
-      console.log(this.$refs.renderResults2)
+      _onSubmit3()
     },
     getJson() {
       const me = this
