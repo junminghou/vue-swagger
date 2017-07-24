@@ -133,4 +133,5 @@ export function _getJson(data) {
             }
         }
     }
+    return tags
 }

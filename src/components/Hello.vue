@@ -101,7 +101,7 @@
 
 <script>
 import axios from 'axios'
-import { _loadForm, _onSubmit2, _onSubmit3 } from '../business/helloservice'
+import { _loadForm, _onSubmit2, _onSubmit3, _getJson } from '../business/helloservice'
 import { _created, _clearSession } from '../business/helloinit'
 
 export default {
@@ -167,52 +167,7 @@ export default {
       axios.get(me.input)
         .then(function (response) {
           me.resData = response.data
-          var data = response.data
-          var tags = data.tags
-          var paths = data.paths
-          var index = 0
-          for (var i = 0; i < tags.length; i++) {
-            var tag = tags[i]
-            tag.paths = []
-            for (var key in paths) {
-              if (paths.hasOwnProperty(key)) {
-                if (key.indexOf('/' + tag.name + '/') > -1) {
-                  var path = paths[key]
-                  var type = ''
-                  var summary = ''
-                  if (path.hasOwnProperty('get')) {
-                    type = 'Get'
-                    summary = path.get.summary
-                  } else if (path.hasOwnProperty('post')) {
-                    type = 'Post'
-                    summary = path.post.summary
-                  } else if (path.hasOwnProperty('put')) {
-                    type = 'Put'
-                    summary = path.put.summary
-                  } else if (path.hasOwnProperty('delete')) {
-                    type = 'Del'
-                    summary = path.delete.summary
-                  }
-                  if (summary === '' || summary === undefined || summary === null) {
-                    summary = '无描述'
-                  }
-
-                  var pathArray = key.split('/')
-                  pathArray.splice(0, 2)
-                  var shortpath = pathArray.join('/')
-
-                  var tagPath = {
-                    path: key,
-                    short_path: shortpath,
-                    type: type,
-                    summary: summary,
-                    index: ++index
-                  }
-                  tag.paths.push(tagPath)
-                }
-              }
-            }
-          }
+          var tags = _getJson(me.resData)
           me.tags = tags
           sessionStorage.setItem('swaggerJson', JSON.stringify(me.resData))
           sessionStorage.setItem('leftList', JSON.stringify(tags))
