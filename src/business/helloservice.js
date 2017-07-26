@@ -1,8 +1,23 @@
 export function _loadForm(result, resData, path) {
     var data = resData.paths[path]
     var params = []
-    if (data != null && data.hasOwnProperty('get')) {
-        params = data.get.parameters
+    if (data === null || data === undefined) {
+        return
+    }
+
+    var request = null
+    if (data.hasOwnProperty('get')) {
+        request = data.get
+    } else if (data.hasOwnProperty('post')) {
+        request = data.post
+    } else if (data.hasOwnProperty('delete')) {
+        request = data.delete
+    } else if (data.hasOwnProperty('put')) {
+        request = data.put
+    }
+
+    if (data.hasOwnProperty('get') || data.hasOwnProperty('delete')) {
+        params = request.parameters
         for (var i = 0; i < params.length; i++) {
             var element = params[i]
             result.push({
@@ -14,8 +29,11 @@ export function _loadForm(result, resData, path) {
                 nameformat: '{{' + propertyKey + '}}'
             })
         }
-    } else if (data != null && data.hasOwnProperty('post')) {
-        var refClass = data.post.parameters[0].schema.$ref.split('/')[2]
+        return
+    }
+
+    if (request !== null) {
+        var refClass = request.parameters[0].schema.$ref.split('/')[2]
         var obj = resData.definitions[refClass]
         var properties = obj.properties
         var requireds = obj.required || []
@@ -38,53 +56,6 @@ export function _loadForm(result, resData, path) {
             })
         }
     }
-}
-
-export function _onSubmit2(current) {
-    var keys = []
-    if (current.filterPageKeys !== '' && current.filterPageKeys.length > 0) {
-        keys = current.filterPageKeys.split('\n')
-    }
-    var str = ''
-    var divArray = current.$refs.renderResults2
-
-    for (var j = 0; j < keys.length; j++) {
-        var key = keys[j]
-
-        for (var i = 0; i < divArray.length; i++) {
-            var element = divArray[i]
-
-            if (element.title.indexOf(key) > -1 || key.indexOf(element.title) > -1) {
-                str += element.innerText
-            }
-        }
-    }
-
-    current.htmlData = str
-}
-
-export function _onSubmit3(current) {
-    var keys = []
-    if (current.filterPageKeys !== '' && current.filterPageKeys.length > 0) {
-        keys = current.filterPageKeys.split('\n')
-    }
-    var str = ''
-    var divArray = current.$refs.renderResults3
-
-    for (var j = 0; j < keys.length; j++) {
-        var key = keys[j]
-
-        for (var i = 0; i < divArray.length; i++) {
-            var element = divArray[i]
-
-            if (element.title.indexOf(key) > -1 || key.indexOf(element.title) > -1) {
-                str += element.innerText
-            }
-        }
-    }
-
-    current.htmlData = str
-    console.log(current.$refs.renderResults2)
 }
 
 export function _getJson(data) {

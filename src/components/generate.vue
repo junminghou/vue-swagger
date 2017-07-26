@@ -35,19 +35,27 @@
 
 <script>
 export default {
+    name: 'generate',
     props: {
         elements: {
             type: Array,
             default: []
+        },
+        index: {
+            type: Number
         }
     },
     data() {
         return {
             filterPageKeys: '',
-            renderResults: ''
+            renderResults: '',
+            annotation: false
         }
     },
     methods: {
+        onClear() {
+
+        },
         showEntities() {
             this.renderResults = this.filterKey(this.$refs.renderResults1)
         },
