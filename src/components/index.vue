@@ -17,16 +17,16 @@
           <el-submenu :index="'parent' + parentIndex" v-for="(tag,parentIndex) in tags" :key="tag.name">
             <template slot="title">
               <i class="el-icon-star-on"></i> {{tag.name}}</template>
-              <el-menu-item :index="'sub' + entity.index" v-for="entity in tag.paths" :key="tag.name + entity.type" @click="loadForm(entity)">
-                <div>
-                  <span>{{ entity.type }}</span>
-                  <span> {{ entity.short_path }} </span>
-                </div>
-                <div>
-                  <span> </span>
-                  <span>{{ entity.summary }}</span>
-                </div>
-              </el-menu-item>
+            <el-menu-item :index="'sub' + entity.index" v-for="entity in tag.paths" :key="tag.name + entity.type" @click="loadForm(entity)">
+              <div>
+                <span>{{ entity.type }}</span>
+                <span> {{ entity.short_path }} </span>
+              </div>
+              <div>
+                <span> </span>
+                <span>{{ entity.summary }}</span>
+              </div>
+            </el-menu-item>
           </el-submenu>
         </el-menu>
       </el-col>
@@ -40,10 +40,10 @@
           </el-tab-pane>
         </el-tabs>
       </el-col>
-      <el-col :span="7" >
-        <el-tabs v-model="activeName">
+      <el-col :span="7">
+        <el-tabs v-model="activeName2">
           <el-tab-pane label="Model" name="first">
-          
+  
           </el-tab-pane>
         </el-tabs>
       </el-col>
@@ -56,7 +56,7 @@
 import axios from 'axios'
 import ConfigManager from '../components/configManager'
 import Generate from '../components/generate'
-import { _loadForm, _getJson } from '../business/helloservice'
+import indexservice from '../business/indexservice'
 import { _created, _clearSession } from '../business/helloinit'
 
 export default {
@@ -69,6 +69,7 @@ export default {
       elements: [],
       isShowHtml: true,
       activeName: 'first',
+      activeName2: 'first',
       index: 0
     }
   },
@@ -85,7 +86,7 @@ export default {
     loadForm(entity) {
       this.elements = []
       var result = this.elements
-      _loadForm(result, this.resData, entity.path)
+      indexservice.loadRequestData(result, this.resData, entity.path)
       sessionStorage.setItem('rightForm', JSON.stringify(result))
     },
     getJson() {
@@ -95,7 +96,7 @@ export default {
       axios.get(me.input)
         .then(function (response) {
           me.resData = response.data
-          var tags = _getJson(me.resData)
+          var tags = indexservice.getRequestJson(me.resData)
           me.tags = tags
           sessionStorage.setItem('swaggerJson', JSON.stringify(me.resData))
           sessionStorage.setItem('leftList', JSON.stringify(tags))
