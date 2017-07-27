@@ -30,13 +30,20 @@
           </el-submenu>
         </el-menu>
       </el-col>
-      <el-col :span="17">
+      <el-col :span="10">
         <el-tabs v-model="activeName" @tab-click="handleClick">
           <el-tab-pane label="配置管理" name="first">
             <configManager :elements="elements"></configManager>
           </el-tab-pane>
           <el-tab-pane label="校验生成" name="second">
             <generate :elements="elements"></generate>
+          </el-tab-pane>
+        </el-tabs>
+      </el-col>
+      <el-col :span="7" >
+        <el-tabs v-model="activeName">
+          <el-tab-pane label="Model" name="first">
+          
           </el-tab-pane>
         </el-tabs>
       </el-col>

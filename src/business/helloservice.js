@@ -1,6 +1,5 @@
 export function _loadForm(result, resData, path) {
     var data = resData.paths[path]
-    var params = []
     if (data === null || data === undefined) {
         return
     }
@@ -15,46 +14,51 @@ export function _loadForm(result, resData, path) {
     } else if (data.hasOwnProperty('put')) {
         request = data.put
     }
-
-    if (data.hasOwnProperty('get') || data.hasOwnProperty('delete')) {
-        params = request.parameters
-        for (var i = 0; i < params.length; i++) {
-            var element = params[i]
-            result.push({
-                name: element.name,
-                description: element.description,
-                selected: 'text',
-                required: element.required,
-                type: element.type,
-                nameformat: '{{' + propertyKey + '}}'
-            })
-        }
+    if (request === null) {
         return
     }
 
-    if (request !== null) {
-        var refClass = request.parameters[0].schema.$ref.split('/')[2]
-        var obj = resData.definitions[refClass]
-        var properties = obj.properties
-        var requireds = obj.required || []
-        for (var propertyKey in properties) {
-            var propertyValue = properties[propertyKey]
-            var type = propertyValue.type
-            var selected = 'text'
-            if (propertyValue.format === 'date-time') {
-                type = 'datetime'
-                selected = 'datepicker'
-            }
-            var required = (requireds.indexOf(propertyKey) > -1) ? propertyKey : '0'
-            result.push({
-                name: propertyKey,
-                description: propertyValue.description,
-                selected: selected,
-                required: required,
-                type: type,
-                nameformat: '{{' + propertyKey + '}}'
-            })
+    var params = request.parameters
+    for (var i = 0; i < params.length; i++) {
+        var element = params[i]
+        if (element.in === 'body') {
+            pushBody(resData, request, result)
+            continue
         }
+        result.push({
+            name: element.name,
+            description: element.description,
+            selected: 'text',
+            required: element.required,
+            type: element.type,
+            nameformat: '{{' + element.name + '}}',
+            in: element.in
+        })
+    }
+}
+function pushBody(resData, request, result) {
+    var refClass = request.parameters[0].schema.$ref.split('/')[2]
+    var obj = resData.definitions[refClass]
+    var properties = obj.properties
+    var requireds = obj.required || []
+    for (var propertyKey in properties) {
+        var propertyValue = properties[propertyKey]
+        var type = propertyValue.type
+        var selected = 'text'
+        if (propertyValue.format === 'date-time') {
+            type = 'datetime'
+            selected = 'datepicker'
+        }
+        var required = (requireds.indexOf(propertyKey) > -1) ? propertyKey : '0'
+        result.push({
+            name: propertyKey,
+            description: propertyValue.description,
+            selected: selected,
+            required: required,
+            type: type,
+            nameformat: '{{' + propertyKey + '}}',
+            in: 'body'
+        })
     }
 }
 
