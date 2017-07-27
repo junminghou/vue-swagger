@@ -12,7 +12,7 @@
     </el-row>
     <h3></h3>
     <el-row>
-      <el-col :span="7">
+      <el-col :span="5">
         <el-menu mode="vertical" theme="dark" default-active="1">
           <el-submenu :index="'parent' + parentIndex" v-for="(tag,parentIndex) in tags" :key="tag.name">
             <template slot="title">
@@ -40,10 +40,10 @@
           </el-tab-pane>
         </el-tabs>
       </el-col>
-      <el-col :span="7">
+      <el-col :span="9">
         <el-tabs v-model="activeName2">
           <el-tab-pane label="Model" name="first">
-  
+            {{testJsonData}}
           </el-tab-pane>
         </el-tabs>
       </el-col>
@@ -56,6 +56,7 @@
 import axios from 'axios'
 import ConfigManager from '../components/configManager'
 import Generate from '../components/generate'
+import Modelview from '../components/modelview'
 import indexservice from '../business/indexservice'
 import { _created, _clearSession } from '../business/helloinit'
 
@@ -70,6 +71,7 @@ export default {
       isShowHtml: true,
       activeName: 'first',
       activeName2: 'first',
+      testJsonData: null,
       index: 0
     }
   },
@@ -88,6 +90,9 @@ export default {
       var result = this.elements
       indexservice.loadRequestData(result, this.resData, entity.path)
       sessionStorage.setItem('rightForm', JSON.stringify(result))
+      var responseData = indexservice.loadResponseData(this.resData, entity.path)
+      this.testJsonData = JSON.stringify(responseData, true, 4)
+      console.dir(indexservice.convertModel(responseData))
     },
     getJson() {
       const me = this
@@ -105,13 +110,19 @@ export default {
   },
   components: {
     Generate,
-    ConfigManager
+    ConfigManager,
+    Modelview
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
+body{
+   font-family: 'Microsoft YaHei', 'Open Sans', 'Droid Sans', Tahoma, Arial, sans-serif;
+   font-size: 13px;
+   font-weight: 400;
+}
 .hello .el-menu-item-group__title {
   font-size: 16px;
 }

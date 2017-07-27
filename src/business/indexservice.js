@@ -1,5 +1,77 @@
 export default {
-    loadRequestData: function (result, resData, path) {
+    convertModel(responseData) {
+        var arraydata = []
+        for (var topkey in responseData) {
+            var topproperty = responseData[topkey]
+            if (topproperty.$isroot && topkey !== '$isroot') {
+                this.filterdata(topproperty, responseData, arraydata, 0)
+            }
+        }
+        return arraydata
+    },
+    filterdata(topproperty, responseData, arraydata, type) {
+        for (var key in topproperty) {
+            var property = topproperty[key]
+            if (property.hasOwnProperty('$ref')) {
+                var ref = property.$ref.split('/')[2]
+                var child = responseData[ref]
+                if (child !== null && child !== undefined) {
+                    topproperty[key].data = []
+                    this.filterdata(child, responseData, topproperty[key].data, 1)
+                    // this.appendArray(key, property, type, arraydata)
+                }
+                continue
+            }
+            this.appendArray(key, property, type, arraydata)
+        }
+    },
+    appendArray(key, property, type, arraydata) {
+        var description = ''
+        if (property['description'] !== null && property['description'] !== undefined) {
+            description = property['description']
+        }
+        var entity = {
+            key: key,
+            type: type,
+            datatype: property['type'],
+            description: description
+        }
+        if (arraydata !== null && arraydata !== undefined) {
+            arraydata.push(entity)
+        }
+    },
+    loadResponseData(requestjson, path) {
+        var result = {}
+        var apipath = this.getProtocol(requestjson.paths[path])
+        if (apipath === null) {
+            return null
+        }
+        var responsesRef = apipath.responses['200'].schema.$ref.split('/')[2]
+        this.filterProperty(requestjson, responsesRef, result)
+        return result
+    },
+    filterProperty(requestjson, responsesRef, result) {
+        var responsesObj = requestjson.definitions[responsesRef]
+        var properties = responsesObj.properties
+        properties['$isroot'] = true
+        result[responsesRef] = properties
+
+        for (var key in properties) {
+            var property = properties[key]
+            if (property.hasOwnProperty('$ref')) {
+                this.filterProperty(requestjson, property.$ref.split('/')[2], result)
+                continue
+            }
+
+            if (property.hasOwnProperty('items')) {
+                if (property.items.hasOwnProperty('$ref')) {
+                    this.filterProperty(requestjson, property.items.$ref.split('/')[2], result)
+                    continue
+                }
+            }
+        }
+    },
+    loadRequestData(result, resData, path) {
         var data = resData.paths[path]
         if (data === null || data === undefined) {
             return
@@ -37,7 +109,7 @@ export default {
             })
         }
     },
-    pushBody: function (resData, request, result) {
+    pushBody(resData, request, result) {
         var refClass = request.parameters[0].schema.$ref.split('/')[2]
         var obj = resData.definitions[refClass]
         var properties = obj.properties
@@ -62,7 +134,7 @@ export default {
             })
         }
     },
-    getRequestJson: function (data) {
+    getRequestJson(data) {
         var tags = data.tags
         var paths = data.paths
         var index = 0
@@ -109,5 +181,21 @@ export default {
             }
         }
         return tags
+    },
+    getProtocol(entity) {
+        if (entity.hasOwnProperty('get')) {
+            return entity['get']
+        }
+        if (entity.hasOwnProperty('post')) {
+            return entity['post']
+        }
+        if (entity.hasOwnProperty('delete')) {
+            return entity['delete']
+        }
+        if (entity.hasOwnProperty('put')) {
+            return entity['put']
+        }
+
+        return null
     }
 }
