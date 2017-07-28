@@ -38,7 +38,7 @@ export default {
 .jsonview {
     margin-left: 20px;
     border-left: 1px solid #E1E1E8;
-    font-family: consolas !important;
+    font-family: Consolas !important;
 }
 
 .jsonview .prop {

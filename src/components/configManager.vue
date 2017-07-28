@@ -1,8 +1,13 @@
 <<template>
     <div class="border-style" v-if="elements.length > 0">
-        <div class="header">
-            building/findByProjectId/{projectId}
-        </div>
+        <el-row :gutter="24">
+            <el-col :span="21">
+                    {{path}}
+            </el-col>
+            <el-col :span="3">
+                <el-button type="primary" @click="getJson()">Send</el-button>
+            </el-col>
+        </el-row>
         <el-row :gutter="20" v-for="element in elements" :key="element.name">
             <el-col :span="5" v-if="element.required === '0'">
                 {{element.name}}
@@ -15,11 +20,7 @@
                 <el-option v-for="option in options" :key="option.key" :value="option.key" :label="option.value"></el-option>
                 </el-select>-->
                <el-input :placeholder="'请输入：' + element.description"></el-input>
-               <!--<input v-model="message" :placeholder="element.description" />-->
             </el-col>
-            <!--<el-col :span="6">
-                {{element.description ? element.description : "无"}}
-            </el-col>-->
             <el-col :span="6">
                 {{ element.type }}
             </el-col>
@@ -37,6 +38,10 @@ export default {
         },
         index: {
             type: Number
+        },
+        path: {
+            type: String,
+            default: ''
         }
     },
     data() {
@@ -65,11 +70,7 @@ export default {
     box-shadow: 0 0 8px 0 rgba(232, 237, 250, .6), 0 2px 4px 0 rgba(232, 237, 250, .5);
 }
 
-.border-style input {
-    border-radius: 2px !important;
-}
-
-.border-style .header{
+.border-style .header {
     padding-bottom: 10px;
     padding-top: 10px;
 }
@@ -91,9 +92,5 @@ export default {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-}
-
-.border-style .el-input__inner {
-    height: 32px;
 }
 </style>

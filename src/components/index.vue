@@ -2,12 +2,12 @@
   <div class="hello">
   
     <el-row :gutter="20">
-      <el-col :span="16">
+      <el-col :span="20">
         <el-input v-model="input" placeholder="请输入内容"></el-input>
       </el-col>
-      <el-col :span="8">
-        <el-button type="primary" @click="getJson()">确定</el-button>
-        <el-button type="primary" @click="clearSession()">清会话</el-button>
+      <el-col :span="4">
+        <el-button type="primary" @click="getJson()">Send</el-button>
+        <el-button type="primary" @click="clearSession()">ClearSession</el-button>
       </el-col>
     </el-row>
     <h3></h3>
@@ -33,7 +33,7 @@
       <el-col :span="10">
         <el-tabs v-model="activeName" @tab-click="handleClick" v-if="isShow">
           <el-tab-pane label="Parameters" name="first">
-            <configManager :elements="elements"></configManager>
+            <configManager :elements="elements" :path="path"></configManager>
           </el-tab-pane>
           <el-tab-pane label="Test" name="second">
             <generate :elements="elements"></generate>
@@ -72,7 +72,8 @@ export default {
       activeName: 'first',
       activeName2: 'first',
       responses_json: null,
-      index: 0
+      index: 0,
+      path: ''
     }
   },
   created() {
@@ -89,6 +90,7 @@ export default {
       this.isShow = true
       this.elements = []
       var result = this.elements
+      this.path = entity.path
       indexservice.loadRequestData(result, this.resData, entity.path)
       sessionStorage.setItem('rightForm', JSON.stringify(result))
       var responseData = indexservice.loadResponseData(this.resData, entity.path)
@@ -120,11 +122,26 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 body {
-  font-family: 'Microsoft YaHei', 'Open Sans', 'Droid Sans', Tahoma, Arial, sans-serif;
+  font-family: 'Consolas', 'Microsoft YaHei', 'Open Sans', 'Droid Sans', Tahoma, Arial, sans-serif;
   font-size: 14px;
 }
 
-.hello .el-tabs__header{
+input {
+  border-radius: 2px !important;
+  height: 32px !important;
+}
+
+button {
+  font-family: 'Consolas', 'Microsoft YaHei', 'Open Sans', 'Droid Sans', Tahoma, Arial, sans-serif;
+  border-radius: 2px !important;
+  height: 32px !important;
+}
+
+.el-button {
+  line-height: 0px;
+}
+
+.hello .el-tabs__header {
   margin: 0px;
 }
 
