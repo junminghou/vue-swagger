@@ -1,74 +1,19 @@
+import junming from '../common/jmlib'
+
 export default {
-    convertModel(responseData) {
-        var arraydata = []
-        for (var topkey in responseData) {
-            var topproperty = responseData[topkey]
-            if (topproperty.$isroot && topkey !== '$isroot') {
-                this.filterdata(topproperty, responseData, arraydata, 0)
-            }
-        }
-        return arraydata
-    },
-    filterdata(topproperty, responseData, arraydata, type) {
-        for (var key in topproperty) {
-            var property = topproperty[key]
-            if (property.hasOwnProperty('$ref')) {
-                var ref = property.$ref.split('/')[2]
-                var child = responseData[ref]
-                if (child !== null && child !== undefined) {
-                    topproperty[key].data = []
-                    this.filterdata(child, responseData, topproperty[key].data, 1)
-                    // this.appendArray(key, property, type, arraydata)
-                }
-                continue
-            }
-            this.appendArray(key, property, type, arraydata)
-        }
-    },
-    appendArray(key, property, type, arraydata) {
-        var description = ''
-        if (property['description'] !== null && property['description'] !== undefined) {
-            description = property['description']
-        }
-        var entity = {
-            key: key,
-            type: type,
-            datatype: property['type'],
-            description: description
-        }
-        if (arraydata !== null && arraydata !== undefined) {
-            arraydata.push(entity)
-        }
-    },
     loadResponseData(requestjson, path) {
         var result = {}
+        var arraydata = []
         var apipath = this.getProtocol(requestjson.paths[path])
         if (apipath === null) {
             return null
         }
         var responsesRef = apipath.responses['200'].schema.$ref.split('/')[2]
-        this.filterProperty(requestjson, responsesRef, result)
-        return result
-    },
-    filterProperty(requestjson, responsesRef, result) {
-        var responsesObj = requestjson.definitions[responsesRef]
-        var properties = responsesObj.properties
-        properties['$isroot'] = true
-        result[responsesRef] = properties
+        filterProperty(requestjson, responsesRef, result, arraydata)
 
-        for (var key in properties) {
-            var property = properties[key]
-            if (property.hasOwnProperty('$ref')) {
-                this.filterProperty(requestjson, property.$ref.split('/')[2], result)
-                continue
-            }
-
-            if (property.hasOwnProperty('items')) {
-                if (property.items.hasOwnProperty('$ref')) {
-                    this.filterProperty(requestjson, property.items.$ref.split('/')[2], result)
-                    continue
-                }
-            }
+        return {
+            responses_swagger: result,
+            responses_json: arraydata
         }
     },
     loadRequestData(result, resData, path) {
@@ -95,42 +40,17 @@ export default {
         for (var i = 0; i < params.length; i++) {
             var element = params[i]
             if (element.in === 'body') {
-                this.pushBody(resData, request, result)
+                pushBody(resData, request, result)
                 continue
             }
             result.push({
                 name: element.name,
-                description: element.description,
+                description: junming.EmptyDef(element.description, ''),
                 selected: 'text',
                 required: element.required,
                 type: element.type,
                 nameformat: '{{' + element.name + '}}',
                 in: element.in
-            })
-        }
-    },
-    pushBody(resData, request, result) {
-        var refClass = request.parameters[0].schema.$ref.split('/')[2]
-        var obj = resData.definitions[refClass]
-        var properties = obj.properties
-        var requireds = obj.required || []
-        for (var propertyKey in properties) {
-            var propertyValue = properties[propertyKey]
-            var type = propertyValue.type
-            var selected = 'text'
-            if (propertyValue.format === 'date-time') {
-                type = 'datetime'
-                selected = 'datepicker'
-            }
-            var required = (requireds.indexOf(propertyKey) > -1) ? propertyKey : '0'
-            result.push({
-                name: propertyKey,
-                description: propertyValue.description,
-                selected: selected,
-                required: required,
-                type: type,
-                nameformat: '{{' + propertyKey + '}}',
-                in: 'body'
             })
         }
     },
@@ -197,5 +117,81 @@ export default {
         }
 
         return null
+    }
+}
+
+function appendArray(key, property, type, arraydata) {
+    var description = ''
+    if (property['description'] !== null && property['description'] !== undefined) {
+        description = property['description']
+    }
+    var datatype = ''
+    if (property['type'] !== null && property['type'] !== undefined) {
+        datatype = property['type']
+    }
+    var entity = {
+        key: key,
+        type: type,
+        datatype: datatype,
+        description: description
+    }
+    if (arraydata !== null && arraydata !== undefined) {
+        arraydata.push(entity)
+    }
+    return entity
+}
+
+function filterProperty(requestjson, responsesRef, result, arraydata) {
+    var responsesObj = requestjson.definitions[responsesRef]
+    var properties = responsesObj.properties
+    result[responsesRef] = properties
+
+    for (var key in properties) {
+        var property = properties[key]
+        var entity = null
+
+        if (property.hasOwnProperty('$ref')) {
+            entity = appendArray(key, property, 1, arraydata)
+            entity.data = []
+            filterProperty(requestjson, property.$ref.split('/')[2], result, entity.data)
+            continue
+        }
+
+        if (property.hasOwnProperty('items')) {
+            if (property.items.hasOwnProperty('$ref')) {
+                entity = appendArray(key, property, 2, arraydata)
+                entity.data = []
+                filterProperty(requestjson, property.items.$ref.split('/')[2], result, entity.data)
+                continue
+            }
+        }
+
+        appendArray(key, property, 0, arraydata)
+    }
+}
+
+function pushBody(resData, request, result) {
+    var refClass = request.parameters[0].schema.$ref.split('/')[2]
+    var obj = resData.definitions[refClass]
+    var properties = obj.properties
+    var requireds = obj.required || []
+    for (var propertyKey in properties) {
+        var propertyValue = properties[propertyKey]
+        var type = propertyValue.type
+        var selected = 'text'
+        if (propertyValue.format === 'date-time') {
+            type = 'datetime'
+            selected = 'datepicker'
+        }
+        var required = (requireds.indexOf(propertyKey) > -1) ? propertyKey : '0'
+        result.push({
+            name: propertyKey,
+            description: junming.EmptyDef(propertyValue.description, ''),
+            selected: selected,
+            required: required,
+            type: type,
+            nameformat: '{{' + propertyKey + '}}',
+            in: 'body'
+        })
     }
 }

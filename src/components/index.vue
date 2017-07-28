@@ -31,19 +31,19 @@
         </el-menu>
       </el-col>
       <el-col :span="10">
-        <el-tabs v-model="activeName" @tab-click="handleClick">
-          <el-tab-pane label="配置管理" name="first">
+        <el-tabs v-model="activeName" @tab-click="handleClick" v-if="isShow">
+          <el-tab-pane label="Parameters" name="first">
             <configManager :elements="elements"></configManager>
           </el-tab-pane>
-          <el-tab-pane label="校验生成" name="second">
+          <el-tab-pane label="Test" name="second">
             <generate :elements="elements"></generate>
           </el-tab-pane>
         </el-tabs>
       </el-col>
       <el-col :span="9">
-        <el-tabs v-model="activeName2">
+        <el-tabs v-model="activeName2" v-if="isShow">
           <el-tab-pane label="Model" name="first">
-            {{testJsonData}}
+            <Modelview :elements="responses_json"></Modelview>
           </el-tab-pane>
         </el-tabs>
       </el-col>
@@ -68,10 +68,10 @@ export default {
       tags: [],
       resData: null,
       elements: [],
-      isShowHtml: true,
+      isShow: false,
       activeName: 'first',
       activeName2: 'first',
-      testJsonData: null,
+      responses_json: null,
       index: 0
     }
   },
@@ -86,13 +86,14 @@ export default {
       _clearSession()
     },
     loadForm(entity) {
+      this.isShow = true
       this.elements = []
       var result = this.elements
       indexservice.loadRequestData(result, this.resData, entity.path)
       sessionStorage.setItem('rightForm', JSON.stringify(result))
       var responseData = indexservice.loadResponseData(this.resData, entity.path)
-      this.testJsonData = JSON.stringify(responseData, true, 4)
-      console.dir(indexservice.convertModel(responseData))
+      this.responses_json = responseData.responses_json
+      console.log(responseData)
     },
     getJson() {
       const me = this
@@ -118,11 +119,15 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-body{
-   font-family: 'Microsoft YaHei', 'Open Sans', 'Droid Sans', Tahoma, Arial, sans-serif;
-   font-size: 13px;
-   font-weight: 400;
+body {
+  font-family: 'Microsoft YaHei', 'Open Sans', 'Droid Sans', Tahoma, Arial, sans-serif;
+  font-size: 14px;
 }
+
+.hello .el-tabs__header{
+  margin: 0px;
+}
+
 .hello .el-menu-item-group__title {
   font-size: 16px;
 }
