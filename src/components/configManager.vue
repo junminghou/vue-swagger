@@ -2,10 +2,10 @@
     <div class="border-style" v-if="elements.length > 0">
         <el-row :gutter="24">
             <el-col :span="21">
-                    {{path}}
+                    {{entity.path}}
             </el-col>
             <el-col :span="3">
-                <el-button type="primary" @click="getJson()">Send</el-button>
+                <el-button type="primary" @click="sendRequest()">Send</el-button>
             </el-col>
         </el-row>
         <el-row :gutter="20" v-for="element in elements" :key="element.name">
@@ -29,6 +29,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
     name: 'configManager',
     props: {
@@ -39,7 +41,11 @@ export default {
         index: {
             type: Number
         },
-        path: {
+        entity: {
+            type: Object,
+            default: null
+        },
+        httpSource: {
             type: String,
             default: ''
         }
@@ -55,6 +61,25 @@ export default {
                 { key: 'textarea', value: '多文本' }
             ],
             input: ''
+        }
+    },
+    methods: {
+        sendRequest() {
+            var value = null
+            var me = this
+            if (this.httpSource.indexOf('/swagger.json') > -1) {
+                value = this.httpSource.replace(/\/swagger.json/, this.entity.path)
+            } else if (this.httpSource.indexOf('/swagger') > -1) {
+                value = this.httpSource.replace(/\/swagger/, this.entity.path)
+            }
+            if (me.entity.type === 'Get') {
+                axios.get(value)
+                .then(function (response) {
+                    me.$emit('sendRequestEvent', response.data)
+                })
+            }
+
+            console.log(me.entity.type)
         }
     }
 }

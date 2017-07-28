@@ -33,7 +33,7 @@
       <el-col :span="10">
         <el-tabs v-model="activeName" @tab-click="handleClick" v-if="isShow">
           <el-tab-pane label="Parameters" name="first">
-            <configManager :elements="elements" :path="path"></configManager>
+            <configManager :elements="elements" :entity="selectedEntity" :httpSource="httpSource" @sendRequestEvent="sendRequestEvent"></configManager>
           </el-tab-pane>
           <el-tab-pane label="Test" name="second">
             <generate :elements="elements"></generate>
@@ -44,6 +44,9 @@
         <el-tabs v-model="activeName2" v-if="isShow">
           <el-tab-pane label="Model" name="first">
             <Modelview :elements="responses_json"></Modelview>
+          </el-tab-pane>
+          <el-tab-pane label="Response" name="second">
+            <Jsonview :elements="jsonviewData"></Jsonview>
           </el-tab-pane>
         </el-tabs>
       </el-col>
@@ -57,6 +60,7 @@ import axios from 'axios'
 import ConfigManager from '../components/configManager'
 import Generate from '../components/generate'
 import Modelview from '../components/modelview'
+import Jsonview from '../components/jsonview'
 import indexservice from '../business/indexservice'
 import { _created, _clearSession } from '../business/helloinit'
 
@@ -73,7 +77,9 @@ export default {
       activeName2: 'first',
       responses_json: null,
       index: 0,
-      path: ''
+      selectedEntity: null,
+      httpSource: '',
+      jsonviewData: null
     }
   },
   created() {
@@ -87,10 +93,11 @@ export default {
       _clearSession()
     },
     loadForm(entity) {
+      this.selectedEntity = entity
+      this.httpSource = this.input
       this.isShow = true
       this.elements = []
       var result = this.elements
-      this.path = entity.path
       indexservice.loadRequestData(result, this.resData, entity.path)
       sessionStorage.setItem('rightForm', JSON.stringify(result))
       var responseData = indexservice.loadResponseData(this.resData, entity.path)
@@ -109,12 +116,18 @@ export default {
           sessionStorage.setItem('swaggerJson', JSON.stringify(me.resData))
           sessionStorage.setItem('leftList', JSON.stringify(tags))
         })
+    },
+    sendRequestEvent(data) {
+      this.activeName2 = 'second'
+      this.jsonviewData = data
+      console.log(data)
     }
   },
   components: {
     Generate,
     ConfigManager,
-    Modelview
+    Modelview,
+    Jsonview
   }
 }
 </script>

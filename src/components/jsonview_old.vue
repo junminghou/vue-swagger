@@ -1,57 +1,34 @@
 <template>
-<div>
-    <div class="jsonview" >
+    <div class="jsonview">
        <span> { </span>
-        <ul class="obj level0" v-for="key in elements" :key="key">
-            <li >
-                <span class="prop"><span class="q">"{{key}}":</span></span><span class="num"> {{ (typeof elements[key]) }},</span>
+        <ul class="obj level0">
+            <li>
+                <span class="prop"><span class="q">"Code":</span></span><span class="num"> 0,</span>
             </li>
-
-            <li v-if="typeof(elements[key]) === 'object'">
+            <li>
                 <span class="collapser">-</span>
                 <span class="prop"><span class="q">"Data": [</span></span>
-                <div style="margin-left: 2em; position: relative;">
-                    <div class="collapser">-</div> 
-                    <span class="prop"><span>{</span></span>
-                    <ul class="array level1 collapsible">
-                        <li><span class="prop"><span class="q">"districtId": </span></span><span class="num"> 35,</span></li>
-                        <li><span class="prop"><span class="q">"districtCode": </span></span><span class="num"> 110100,</span></li>
-                    </ul>
-                    <span class="prop"><span>}</span></span>
-                </div>
+                <ul class="array level1 collapsible">
+                    <li>
+                        <div class="collapser">-</div> 
+                        <span class="prop"><span>{</span></span>
+                        <ul class="obj level2 collapsible">
+                            <li><span class="prop"><span class="q">"districtId": </span></span><span class="num"> 35,</span></li>
+                            <li><span class="prop"><span class="q">"districtCode": </span></span><span class="num"> 110100,</span></li>
+                        </ul>
+                       <span class="prop"><span>}</span></span>
+                    </li>
+                </ul>
                 <span class="prop"><span>],</span></span>
             </li>
         </ul>
         <span>} </span>
     </div>
-</div>
 </template>
 
 <script>
 export default {
-    name: 'jsonview',
-    props: {
-        elements: {
-            type: Object,
-            default: []
-        },
-        index: {
-            type: Number
-        },
-        entity: {
-            type: Object,
-            default: null
-        },
-        httpSource: {
-            type: String,
-            default: ''
-        }
-    },
-    data() {
-        return {
 
-        }
-    }
 }
 </script>
 
@@ -61,7 +38,7 @@ export default {
 .jsonview {
     margin-left: 20px;
     border-left: 1px solid #E1E1E8;
-    font-family: consolas !important;
+    font-family: Consolas !important;
 }
 
 .jsonview .prop {
