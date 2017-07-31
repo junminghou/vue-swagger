@@ -100,6 +100,30 @@ export default {
                             type: 1,
                             value: '没有错误信息'
                         }
+                    ],
+                    [
+                        {
+                            key: 'Q1',
+                            type: 1,
+                            value: '0'
+                        },
+                        {
+                            key: 'D1',
+                            type: 3,
+                            value: '0',
+                            children: {
+                                type: 'array',
+                                value: [
+                                    [
+                                        {
+                                            key: 'soces',
+                                            type: 1,
+                                            value: '100'
+                                        }
+                                    ]
+                                ]
+                            }
+                        }
                     ]
                 ]
 

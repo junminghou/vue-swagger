@@ -72,11 +72,12 @@ export default {
             } else if (this.httpSource.indexOf('/swagger') > -1) {
                 value = this.httpSource.replace(/\/swagger/, this.entity.path)
             }
+            value = value.replace(/{id}/, 1)
             if (me.entity.type === 'Get') {
                 axios.get(value)
-                .then(function (response) {
-                    me.$emit('sendRequestEvent', response.data)
-                })
+                    .then(function (response) {
+                        me.$emit('sendRequestEvent', response.data)
+                    })
             }
 
             console.log(me.entity.type)

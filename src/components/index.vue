@@ -46,7 +46,7 @@
             <Modelview :elements="responses_json"></Modelview>
           </el-tab-pane>
           <el-tab-pane label="Response" name="second">
-            <Jsonview :elements="jsonviewData"></Jsonview>
+            <Jsonview :jsondata="jsonviewData"></Jsonview>
           </el-tab-pane>
         </el-tabs>
       </el-col>
@@ -118,9 +118,52 @@ export default {
         })
     },
     sendRequestEvent(data) {
-      this.activeName2 = 'second'
-      this.jsonviewData = data
       console.log(data)
+      this.activeName2 = 'second'
+      var result = { isroot: true, value: [] }
+      if (data.constructor === Object) {
+        result.type = 'object'
+      } else if (data.constructor === Array) {
+        result.type = 'array'
+      }
+
+      this.digui(data, result.value)
+      this.jsonviewData = result
+      console.log(this.jsonviewData)
+    },
+    digui(data, result) {
+      var arrayvalue = []
+      for (var key in data) {
+        var entity = {}
+        var child = data[key]
+        if (child.constructor === Object) {
+          entity.key = key
+          entity.type = 2
+          entity.children = {}
+          entity.children.type = 'object'
+          entity.children.value = [[]]
+          this.digui(child, entity.children.value[0])
+        } else if (child.constructor === Array) {
+          entity.key = key
+          entity.type = 3
+          entity.children = {}
+          entity.children.type = 'array'
+          entity.children.value = []
+          for (var i = 0; i < child.length; i++) {
+            this.digui(child[i], entity.children.value)
+          }
+        } else if (child.constructor === String) {
+          entity.key = key
+          entity.type = 1
+          entity.value = child
+        } else {
+          entity.key = key
+          entity.type = 0
+          entity.value = child
+        }
+        arrayvalue.push(entity)
+      }
+      result.push(arrayvalue)
     }
   },
   components: {

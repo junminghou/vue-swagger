@@ -6,12 +6,18 @@
                 <div v-for="array in jsondata.value" :key="array.key" :class="!jsondata.isroot ? 'margin':''">
                     <span> { </span>
                     <ul class="border">
-                        <template v-if="entity.type" v-for="entity in array">
-                            <li v-if="entity.type === 1" :key="entity.key">
+                        <template v-for="entity in array">
+                             <li v-if="entity.type === 0" :key="entity.key">
                                 <span class="prop">
                                     <span class="q">"{{entity.key}}":</span>
                                 </span>
                                 <span class="num"> {{ entity.value }},</span>
+                            </li>
+                            <li v-else-if="entity.type === 1" :key="entity.key">
+                                <span class="prop">
+                                    <span class="q">"{{entity.key}}":</span>
+                                </span>
+                                <span class="num"> "{{ entity.value }}",</span>
                             </li>
                             <li v-else-if="entity.type === 2" :key="entity.key">
                                 <span class="prop">
@@ -44,12 +50,18 @@
                 <div v-for="(array,index) in jsondata.value" :key="index" class="margin">
                     <span> { </span>
                     <ul class="border">
-                        <template v-if="child.type" v-for="child in array">
-                            <li v-if="child.type === 1" :key="child.key">
+                        <template v-for="child in array">
+                            <li v-if="child.type === 0" :key="child.key">
                                 <span class="prop">
                                     <span class="q">"{{child.key}}":</span>
                                 </span>
                                 <span class="num"> {{ child.value }},</span>
+                            </li>
+                            <li v-else-if="child.type === 1" :key="child.key">
+                                <span class="prop">
+                                    <span class="q">"{{child.key}}":</span>
+                                </span>
+                                <span class="num"> "{{ child.value }}",</span>
                             </li>
                             <li v-else-if="child.type === 2" :key="child.key">
                                 <span class="prop">
