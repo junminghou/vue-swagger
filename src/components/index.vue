@@ -129,7 +129,7 @@ export default {
 
       this.digui(data, result.value)
       this.jsonviewData = result
-      console.log(this.jsonviewData)
+      console.dir(JSON.stringify(this.jsonviewData))
     },
     digui(data, result) {
       var arrayvalue = []
@@ -141,8 +141,8 @@ export default {
           entity.type = 2
           entity.children = {}
           entity.children.type = 'object'
-          entity.children.value = [[]]
-          this.digui(child, entity.children.value[0])
+          entity.children.value = []
+          this.digui(child, entity.children.value)
         } else if (child.constructor === Array) {
           entity.key = key
           entity.type = 3

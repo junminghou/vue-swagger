@@ -130,7 +130,7 @@ export default {
 }
 
 .jsonview .margin {
-    margin-left: 2em;
+    margin-left: 2.1em;
 }
 
 .jsonview .prop {
