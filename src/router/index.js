@@ -4,6 +4,7 @@ import Index from '@/components/index'
 import Textarea from '@/components/textarea'
 import Jsonview from '@/components/jsonview'
 import Modelview from '@/components/modelview'
+import Demo from '@/components/demo'
 
 Vue.use(Router)
 
@@ -28,6 +29,11 @@ export default new Router({
       path: '/modelview',
       name: 'modelview',
       component: Modelview
+    },
+    {
+      path: '/demo',
+      name: 'demo',
+      component: Demo
     }
   ]
 })

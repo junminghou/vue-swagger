@@ -1,46 +1,97 @@
 <template>
-<div>
-    <div class="jsonview" >
-       <span> { </span>
-        <ul class="obj level0" v-for="key in elements" :key="key">
-            <li >
-                <span class="prop"><span class="q">"{{key}}":</span></span><span class="num"> {{ (typeof elements[key]) }},</span>
-            </li>
-
-            <li v-if="typeof(elements[key]) === 'object'">
-                <span class="collapser">-</span>
-                <span class="prop"><span class="q">"Data": [</span></span>
-                <div style="margin-left: 2em; position: relative;">
-                    <div class="collapser">-</div> 
-                    <span class="prop"><span>{</span></span>
-                    <ul class="array level1 collapsible">
-                        <li><span class="prop"><span class="q">"districtId": </span></span><span class="num"> 35,</span></li>
-                        <li><span class="prop"><span class="q">"districtCode": </span></span><span class="num"> 110100,</span></li>
+    <div>
+        <div class="jsonview">
+    
+            <template v-if="jsondata.type === 'object'">
+                <div v-for="array in jsondata.value" :key="array.key" :class="!jsondata.isroot ? 'margin':''">
+                    <span> { </span>
+                    <ul class="border">
+                        <template v-if="entity.type" v-for="entity in array">
+                            <li v-if="entity.type === 1" :key="entity.key">
+                                <span class="prop">
+                                    <span class="q">"{{entity.key}}":</span>
+                                </span>
+                                <span class="num"> {{ entity.value }},</span>
+                            </li>
+                            <li v-else-if="entity.type === 2" :key="entity.key">
+                                <span class="prop">
+                                    <span class="q">"{{entity.key}}": </span>
+                                </span>
+                                <my-jsonview :jsondata='entity.children' style="margin-left: -2em;"></my-jsonview>
+                            </li>
+                            <li v-else-if="entity.type === 3" :key="entity.key">
+                                <span class="prop">
+                                    <span class="q">"{{entity.key}}": [</span>
+                                </span>
+    
+                                <my-jsonview :jsondata='entity.children' class="border"></my-jsonview>
+    
+                                <span class="prop">
+                                    <span>],</span>
+                                </span>
+                            </li>
+                        </template>
                     </ul>
-                    <span class="prop"><span>}</span></span>
+                    <span>}, </span>
                 </div>
-                <span class="prop"><span>],</span></span>
-            </li>
-        </ul>
-        <span>} </span>
+            </template>
+    
+            <template v-else-if="jsondata.type === 'array'">
+                <span class="prop" v-if="jsondata.type === 'array' && jsondata.isroot">
+                    <span class="q">[</span>
+                </span>
+    
+                <div v-for="(array,index) in jsondata.value" :key="index" class="margin">
+                    <span> { </span>
+                    <ul class="border">
+                        <template v-if="child.type" v-for="child in array">
+                            <li v-if="child.type === 1" :key="child.key">
+                                <span class="prop">
+                                    <span class="q">"{{child.key}}":</span>
+                                </span>
+                                <span class="num"> {{ child.value }},</span>
+                            </li>
+                            <li v-else-if="child.type === 2" :key="child.key">
+                                <span class="prop">
+                                    <span class="q">"{{child.key}}": </span>
+                                </span>
+                                <my-jsonview :jsondata='child.children' style="margin-left: -2em;"></my-jsonview>
+                            </li>
+                            <li v-else-if="child.type === 3" :key="child.key">
+                                <span class="prop">
+                                    <span class="q">"{{child.key}}": [</span>
+                                </span>
+    
+                                <my-jsonview :jsondata='child.children' class="border"></my-jsonview>
+    
+                                <span class="prop">
+                                    <span>],</span>
+                                </span>
+                            </li>
+                        </template>
+                    </ul>
+                    <span>}, </span>
+                </div>
+    
+                <span class="prop" v-if="jsondata.type === 'array' && jsondata.isroot">
+                    <span>]</span>
+                </span>
+            </template>
+    
+        </div>
     </div>
-</div>
 </template>
 
 <script>
 export default {
-    name: 'jsonview',
+    name: 'my-jsonview',
     props: {
-        elements: {
-            type: Object,
-            default: []
-        },
         index: {
             type: Number
         },
-        entity: {
+        jsondata: {
             type: Object,
-            default: null
+            default: {}
         },
         httpSource: {
             type: String,
@@ -59,13 +110,20 @@ export default {
 @charset "UTF-8";
 
 .jsonview {
-    margin-left: 20px;
-    border-left: 1px solid #E1E1E8;
     font-family: consolas !important;
+}
+
+.jsonview .border {
+    border-left: 1px dotted #E1E1E8;
+}
+
+.jsonview .margin {
+    margin-left: 2em;
 }
 
 .jsonview .prop {
     font-weight: bold;
+    color: #91236c;
 }
 
 .jsonview .null {
@@ -135,19 +193,16 @@ export default {
 
 .jsonview li {
     position: relative;
+    margin-left: 2em;
 }
 
 .jsonview ul {
     list-style: none;
-    margin: 0 0 0 2em;
+    margin: 0 0 0 0;
     padding: 0;
 }
 
 .jsonview h1 {
     font-size: 1.2em;
-}
-
-.jsonview .prop {
-    color: #91236c;
 }
 </style>
