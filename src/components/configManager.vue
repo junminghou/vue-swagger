@@ -1,8 +1,8 @@
-<<template>
+<template>
     <div class="border-style" v-if="elements.length > 0">
         <el-row :gutter="24">
             <el-col :span="21">
-                    {{entity.path}}
+                {{entity.path}}
             </el-col>
             <el-col :span="3">
                 <el-button type="primary" @click="sendRequest()">Send</el-button>
@@ -17,9 +17,9 @@
             </el-col>
             <el-col :span="13">
                 <!--<el-select v-model="element.selected">
-                <el-option v-for="option in options" :key="option.key" :value="option.key" :label="option.value"></el-option>
-                </el-select>-->
-               <el-input :placeholder="'请输入：' + element.description"></el-input>
+                                        <el-option v-for="option in options" :key="option.key" :value="option.key" :label="option.value"></el-option>
+                                        </el-select>-->
+                <el-input :placeholder="'请输入：' + element.description" v-model="element.value"></el-input>
             </el-col>
             <el-col :span="6">
                 {{ element.type }}
@@ -30,6 +30,7 @@
 
 <script>
 import axios from 'axios'
+import junming from '../common/jmlib'
 
 export default {
     name: 'configManager',
@@ -60,21 +61,69 @@ export default {
                 { key: 'datepicker', value: '日期框' },
                 { key: 'textarea', value: '多文本' }
             ],
-            input: ''
+            input: '',
+            testvalue: '1111111111111'
         }
     },
     methods: {
         sendRequest() {
-            var value = null
+            var url = null
             var me = this
+            var shortpath = this.entity.path
             if (this.httpSource.indexOf('/swagger.json') > -1) {
-                value = this.httpSource.replace(/\/swagger.json/, this.entity.path)
+                url = this.httpSource.replace(/\/swagger.json/, shortpath)
             } else if (this.httpSource.indexOf('/swagger') > -1) {
-                value = this.httpSource.replace(/\/swagger/, this.entity.path)
+                url = this.httpSource.replace(/\/swagger/, shortpath)
             }
-            value = value.replace(/{id}/, 6784)
+
+            var query = {}
+            var body = {}
+            var hasQuery = false
+            var hasBody = false
+            var hasPath = false
+            for (var i = 0; i < this.elements.length; i++) {
+                var element = this.elements[i]
+                if (junming.IsNullOrEmpty(element.value)) {
+                    continue
+                }
+                var value = element.value
+                if (element.type === 'integer') {
+                    value = parseInt(value)
+                }
+                if (element.in === 'path') {
+                    var regExp = new RegExp('{' + element.name + '}', 'gi')
+                    url = url.replace(regExp, element.value)
+                    hasPath = true
+                } else if (element.in === 'query') {
+                    query[element.name] = value
+                    hasQuery = true
+                } else if (element.in === 'body') {
+                    body[element.name] = value
+                    hasBody = true
+                }
+            }
+
+            if (hasQuery) {
+                url = url + '?' + junming.EntityToUrl(query, true)
+            }
+
             if (me.entity.type === 'Get') {
-                axios.get(value)
+                axios.get(url)
+                    .then(function (response) {
+                        me.$emit('sendRequestEvent', response.data)
+                    })
+            } else if (me.entity.type === 'Post') {
+                axios.post(url, body)
+                    .then(function (response) {
+                        me.$emit('sendRequestEvent', response.data)
+                    })
+            } else if (me.entity.type === 'Del') {
+                axios.delete(url)
+                    .then(function (response) {
+                        me.$emit('sendRequestEvent', response.data)
+                    })
+            } else if (me.entity.type === 'Put') {
+                axios.put(url, body)
                     .then(function (response) {
                         me.$emit('sendRequestEvent', response.data)
                     })

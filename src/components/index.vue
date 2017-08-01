@@ -63,6 +63,7 @@ import Modelview from '../components/modelview'
 import Jsonview from '../components/jsonview'
 import indexservice from '../business/indexservice'
 import { _created, _clearSession } from '../business/helloinit'
+import jsontoview from '../common/jsontoview'
 
 export default {
   name: 'index',
@@ -102,7 +103,7 @@ export default {
       sessionStorage.setItem('rightForm', JSON.stringify(result))
       var responseData = indexservice.loadResponseData(this.resData, entity.path)
       this.responses_json = responseData.responses_json
-      console.log(responseData)
+      console.log(result)
     },
     getJson() {
       const me = this
@@ -118,52 +119,8 @@ export default {
         })
     },
     sendRequestEvent(data) {
-      console.log(data)
       this.activeName2 = 'second'
-      var result = { isroot: true, value: [] }
-      if (data.constructor === Object) {
-        result.type = 'object'
-      } else if (data.constructor === Array) {
-        result.type = 'array'
-      }
-
-      this.digui(data, result.value)
-      this.jsonviewData = result
-      console.dir(JSON.stringify(this.jsonviewData))
-    },
-    digui(data, result) {
-      var arrayvalue = []
-      for (var key in data) {
-        var entity = {}
-        var child = data[key]
-        if (child.constructor === Object) {
-          entity.key = key
-          entity.type = 2
-          entity.children = {}
-          entity.children.type = 'object'
-          entity.children.value = []
-          this.digui(child, entity.children.value)
-        } else if (child.constructor === Array) {
-          entity.key = key
-          entity.type = 3
-          entity.children = {}
-          entity.children.type = 'array'
-          entity.children.value = []
-          for (var i = 0; i < child.length; i++) {
-            this.digui(child[i], entity.children.value)
-          }
-        } else if (child.constructor === String) {
-          entity.key = key
-          entity.type = 1
-          entity.value = child
-        } else {
-          entity.key = key
-          entity.type = 0
-          entity.value = child
-        }
-        arrayvalue.push(entity)
-      }
-      result.push(arrayvalue)
+      this.jsonviewData = jsontoview(data)
     }
   },
   components: {

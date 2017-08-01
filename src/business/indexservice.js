@@ -50,7 +50,8 @@ export default {
                 required: element.required,
                 type: element.type,
                 nameformat: '{{' + element.name + '}}',
-                in: element.in
+                in: element.in,
+                value: null
             })
         }
     },
@@ -191,7 +192,8 @@ function pushBody(resData, request, result) {
             required: required,
             type: type,
             nameformat: '{{' + propertyKey + '}}',
-            in: 'body'
+            in: 'body',
+            value: null
         })
     }
 }
