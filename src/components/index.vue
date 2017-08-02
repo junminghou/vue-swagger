@@ -46,7 +46,7 @@
             <Modelview :elements="responses_json"></Modelview>
           </el-tab-pane>
           <el-tab-pane label="Response" name="second">
-            <Jsonview :jsondata="jsonviewData"></Jsonview> 
+            <Jsonview :jsondata="jsonviewData"></Jsonview>
           </el-tab-pane>
         </el-tabs>
       </el-col>
@@ -118,8 +118,9 @@ export default {
           sessionStorage.setItem('leftList', JSON.stringify(tags))
         })
     },
-    sendRequestEvent(data) {
+    sendRequestEvent(data, time) {
       this.activeName2 = 'second'
+      data['Api耗时'] = time + 'ms'
       this.jsonviewData = jsontoview(data)
     }
   },

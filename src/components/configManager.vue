@@ -19,10 +19,10 @@
                 </el-col>
                 <el-col :span="13">
                     <!--<el-select v-model="element.selected">
-                                                        <el-option v-for="option in options" :key="option.key" :value="option.key" :label="option.value"></el-option>
-                                                        </el-select>-->
+                                                                            <el-option v-for="option in options" :key="option.key" :value="option.key" :label="option.value"></el-option>
+                                                                            </el-select>-->
                     <el-input :placeholder="'请输入：' + element.description" v-model="element.value">
-                         <template slot="append"> {{ element.in }}</template>
+                        <template slot="append"> {{ element.in }}</template>
                     </el-input>
                 </el-col>
                 <el-col :span="6">
@@ -117,28 +117,33 @@ export default {
                 url = url + '?' + junming.EntityToUrl(query, true)
             }
 
+            var beginTime = new Date()
             if (me.entity.type === 'Get') {
                 axios.get(url)
                     .then(function (response) {
-                        me.$emit('sendRequestEvent', response.data)
+                        me.$emit('sendRequestEvent', response.data, computertime(beginTime))
                     })
             } else if (me.entity.type === 'Post') {
                 axios.post(url, body)
                     .then(function (response) {
-                        me.$emit('sendRequestEvent', response.data)
+                        me.$emit('sendRequestEvent', response.data, computertime(beginTime))
                     })
             } else if (me.entity.type === 'Del') {
                 axios.delete(url)
                     .then(function (response) {
-                        me.$emit('sendRequestEvent', response.data)
+                        me.$emit('sendRequestEvent', response.data, computertime(beginTime))
                     })
             } else if (me.entity.type === 'Put') {
                 axios.put(url, body)
                     .then(function (response) {
-                        me.$emit('sendRequestEvent', response.data)
+                        me.$emit('sendRequestEvent', response.data, computertime(beginTime))
                     })
             }
 
+            function computertime(beginTime) {
+                var endTime = new Date()
+                return endTime.getTime() - beginTime.getTime()
+            }
             console.log(me.entity.type)
         }
     }
