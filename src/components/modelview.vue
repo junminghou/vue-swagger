@@ -63,11 +63,11 @@ export default {
     },
     computed: {
         modelviewjson: function () {
-            if (!junming.IsNullOrEmpty(junming.QueryString('clear'))) {
-                localStorage.clear()
-            }
             if (this.isRecursion) {
                 return this.elements
+            }
+            if (!junming.IsNullOrEmpty(junming.QueryString('clear'))) {
+                localStorage.clear()
             }
             if (junming.QueryString('getcache') === 'true') {
                 console.log(1)
