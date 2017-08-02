@@ -1,7 +1,7 @@
 <template>
-    <div class="jsonview" v-if="elements !== null">
+    <div class="jsonview" v-if="modelviewjson !== null">
         <span> { </span>
-        <ul class="obj level0" :key="element.key" v-for="element in elements">
+        <ul class="obj level0" :key="element.key" v-for="element in modelviewjson">
             <template v-if="element.type==0">
                 <li>
                     <span class="prop">
@@ -16,7 +16,7 @@
                         <span class="q">{{element.key}}: </span>
                     </span>
                     <div class="group2">
-                         <modelview :elements="element.data"></modelview>
+                        <modelview :elements="element.data" :isRecursion="true"></modelview>
                     </div>
                 </li>
             </template>
@@ -31,7 +31,7 @@
                         </span>
                     </div>
                     <div class="group">
-                        <modelview :elements="element.data"></modelview>
+                        <modelview :elements="element.data" :isRecursion="true"></modelview>
                     </div>
                     <div class="group2">
                         <span class="prop">
@@ -46,12 +46,38 @@
 </template>
 
 <script>
+import junming from '../common/jmlib'
 export default {
     name: 'modelview',
     props: {
         elements: {
             type: Array,
-            default: []
+            default: function () {
+                return []
+            }
+        },
+        isRecursion: {
+            type: Boolean,
+            default: false
+        }
+    },
+    computed: {
+        modelviewjson: function () {
+            if (!junming.IsNullOrEmpty(junming.QueryString('clear'))) {
+                localStorage.clear()
+            }
+            if (this.isRecursion) {
+                return this.elements
+            }
+            if (junming.QueryString('getcache') === 'true') {
+                console.log(1)
+                var modelViewEntity = localStorage.getItem('model_view_entity')
+                if (!junming.IsNullOrEmpty(modelViewEntity)) {
+                    return JSON.parse(modelViewEntity)
+                }
+                return []
+            }
+            return this.elements
         }
     },
     data() {

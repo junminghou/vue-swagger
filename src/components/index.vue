@@ -106,6 +106,7 @@ export default {
       sessionStorage.setItem('rightForm', JSON.stringify(result))
       var responseData = indexservice.loadResponseData(this.resData, entity.path)
       this.responses_json = responseData.responses_json
+      localStorage.setItem('model_view_entity', JSON.stringify(responseData.responses_json))
       console.table(this.responses_json)
     },
     getJson() {

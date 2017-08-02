@@ -1,4 +1,12 @@
 export default {
+    QueryString(name) {
+        var result = location.hash.match(new RegExp('[\?\&]' + name + '=([^\&]+)', 'i'))
+        if (result == null || result.length < 1) {
+            return ''
+        }
+
+        return result[1]
+    },
     EmptyDef(val, def) {
         if (this.IsNullOrEmpty(val)) {
             if (this.IsNull(def)) {
