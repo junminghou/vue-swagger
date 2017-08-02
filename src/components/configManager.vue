@@ -1,5 +1,5 @@
 <template>
-    <div class="border-style" v-if="elements.length > 0">
+    <div class="border-style">
         <el-row :gutter="24">
             <el-col :span="21">
                 {{entity.path}}
@@ -8,23 +8,26 @@
                 <el-button type="primary" @click="sendRequest()">Send</el-button>
             </el-col>
         </el-row>
-        <el-row :gutter="20" v-for="element in elements" :key="element.name">
-            <el-col :span="5" v-if="element.required === '0'">
-                {{element.name}}
-            </el-col>
-            <el-col :span="5" v-if="element.required !== '0'">
-                <span style="color:red;">*{{element.name}}</span>
-            </el-col>
-            <el-col :span="13">
-                <!--<el-select v-model="element.selected">
-                                        <el-option v-for="option in options" :key="option.key" :value="option.key" :label="option.value"></el-option>
-                                        </el-select>-->
-                <el-input :placeholder="'请输入：' + element.description" v-model="element.value"></el-input>
-            </el-col>
-            <el-col :span="6">
-                {{ element.type }}
-            </el-col>
-        </el-row>
+    
+        <div v-if="isShow">
+            <el-row :gutter="20" v-for="element in elements" :key="element.name">
+                <el-col :span="5" v-if="element.required === '0'">
+                    {{element.name}}
+                </el-col>
+                <el-col :span="5" v-if="element.required !== '0'">
+                    <span style="color:red;">*{{element.name}}</span>
+                </el-col>
+                <el-col :span="13">
+                    <!--<el-select v-model="element.selected">
+                                                    <el-option v-for="option in options" :key="option.key" :value="option.key" :label="option.value"></el-option>
+                                                    </el-select>-->
+                    <el-input :placeholder="'请输入：' + element.description" v-model="element.value"></el-input>
+                </el-col>
+                <el-col :span="6">
+                    {{ element.type }}
+                </el-col>
+            </el-row>
+        </div>
     </div>
 </template>
 
@@ -63,6 +66,11 @@ export default {
             ],
             input: '',
             testvalue: '1111111111111'
+        }
+    },
+    computed: {
+        isShow() {
+            return this.elements.length > 0
         }
     },
     methods: {
