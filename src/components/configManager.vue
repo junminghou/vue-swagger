@@ -19,9 +19,11 @@
                 </el-col>
                 <el-col :span="13">
                     <!--<el-select v-model="element.selected">
-                                                    <el-option v-for="option in options" :key="option.key" :value="option.key" :label="option.value"></el-option>
-                                                    </el-select>-->
-                    <el-input :placeholder="'请输入：' + element.description" v-model="element.value"></el-input>
+                                                        <el-option v-for="option in options" :key="option.key" :value="option.key" :label="option.value"></el-option>
+                                                        </el-select>-->
+                    <el-input :placeholder="'请输入：' + element.description" v-model="element.value">
+                         <template slot="append"> {{ element.in }}</template>
+                    </el-input>
                 </el-col>
                 <el-col :span="6">
                     {{ element.type }}

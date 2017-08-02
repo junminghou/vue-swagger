@@ -1,39 +1,42 @@
 <template>
     <div class="jsonview" v-if="elements !== null">
-       <span> { </span>
+        <span> { </span>
         <ul class="obj level0" :key="element.key" v-for="element in elements">
             <template v-if="element.type==0">
                 <li>
-                    <span class="prop"><span class="q">{{element.key}}:</span></span><span class="num"> {{element.description}}</span>
+                    <span class="prop">
+                        <span class="q">{{element.key}}:</span>
+                    </span>
+                    <span class="num"> {{element.description}}</span>
                 </li>
             </template>
-             <template v-else-if="element.type==1" >
+            <template v-else-if="element.type==1">
                 <li>
-                    <span class="prop"><span class="q">{{element.key}}: </span></span>
+                    <span class="prop">
+                        <span class="q">{{element.key}}: </span>
+                    </span>
                     <div class="group2">
-                        <span class="prop"><span>{</span></span>
-                        <ul class="array level1 collapsible" v-for="child in element.data" :key="child.key">
-                            <li><span class="prop"><span class="q">{{child.key}}: </span></span><span class="num"> {{child.description}}</span></li>
-                        </ul>
-                        <span class="prop"><span>}</span></span>
+                         <modelview :elements="element.data"></modelview>
                     </div>
                 </li>
             </template>
-             <template v-else-if="element.type==2">
+            <template v-else-if="element.type==2">
                 <li>
-                    <span class="prop"><span class="q">{{element.key}}: </span></span>
+                    <span class="prop">
+                        <span class="q">{{element.key}}: </span>
+                    </span>
                     <div class="group2">
-                        <span class="prop"><span>[</span></span>
+                        <span class="prop">
+                            <span>[</span>
+                        </span>
                     </div>
                     <div class="group">
-                        <span class="prop"><span>{</span></span>
-                        <ul class="array level1 collapsible" v-for="child in element.data" :key="child.key">
-                            <li><span class="prop"><span class="q">{{child.key}}: </span></span><span class="num"> {{child.description}}</span></li>
-                        </ul>
-                        <span class="prop"><span>}</span></span>
+                        <modelview :elements="element.data"></modelview>
                     </div>
                     <div class="group2">
-                        <span class="prop"><span>] </span></span>
+                        <span class="prop">
+                            <span>] </span>
+                        </span>
                     </div>
                 </li>
             </template>
@@ -44,6 +47,7 @@
 
 <script>
 export default {
+    name: 'modelview',
     props: {
         elements: {
             type: Array,
@@ -138,12 +142,13 @@ export default {
 .jsonview li {
     position: relative;
 }
-.jsonview .group{
+
+.jsonview .group {
     margin-left: 2em;
     position: relative;
 }
 
-.jsonview .group2{
+.jsonview .group2 {
     margin-left: 0px;
     position: relative;
 }

@@ -67,5 +67,27 @@
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
+  ],
+  "snippets": [
+    {
+      "language": "javascript",
+      "path": "./src/snippets/main.json"
+    },
+    {
+      "language": "typescript",
+      "path": "./src/snippets/main.json"
+    },
+    {
+      "language": "html",
+      "path": "./src/snippets/html.json"
+    },
+    {
+      "language": "vue",
+      "path": "./src/snippets/main.json"
+    },
+    {
+      "language": "vue",
+      "path": "./src/snippets/html.json"
+    }
   ]
 }

@@ -46,7 +46,7 @@
             <Modelview :elements="responses_json"></Modelview>
           </el-tab-pane>
           <el-tab-pane label="Response" name="second">
-            <Jsonview :jsondata="jsonviewData"></Jsonview>
+            <Jsonview :jsondata="jsonviewData"></Jsonview> 
           </el-tab-pane>
         </el-tabs>
       </el-col>
@@ -103,7 +103,7 @@ export default {
       sessionStorage.setItem('rightForm', JSON.stringify(result))
       var responseData = indexservice.loadResponseData(this.resData, entity.path)
       this.responses_json = responseData.responses_json
-      console.log(result)
+      console.table(this.responses_json)
     },
     getJson() {
       const me = this

@@ -1,13 +1,12 @@
 <template>
     <div>
-        <div class="jsonview">
-    
+        <div class="jsonview" v-if="isShow">
             <template v-if="jsondata.type === 'object'">
                 <div v-for="array in jsondata.value" :key="array.key" :class="!jsondata.isroot ? 'margin':''">
                     <span> { </span>
                     <ul class="border">
                         <template v-for="entity in array">
-                             <li v-if="entity.type === 0" :key="entity.key">
+                            <li v-if="entity.type === 0" :key="entity.key">
                                 <span class="prop">
                                     <span class="q">"{{entity.key}}":</span>
                                 </span>
@@ -89,12 +88,13 @@
                     <span>]</span>
                 </span>
             </template>
-    
         </div>
     </div>
 </template>
 
 <script>
+import junming from '../common/jmlib'
+
 export default {
     name: 'my-jsonview',
     props: {
@@ -113,6 +113,11 @@ export default {
     data() {
         return {
 
+        }
+    },
+    computed: {
+        isShow() {
+            return !junming.IsNullOrEmpty(this.jsondata)
         }
     }
 }
