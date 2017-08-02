@@ -2,12 +2,13 @@
   <div class="hello">
   
     <el-row :gutter="20">
-      <el-col :span="20">
+      <el-col style="width: calc(100% - 350px);">
         <el-input v-model="input" placeholder="请输入内容"></el-input>
       </el-col>
-      <el-col :span="4">
+      <el-col style="width: 350px;">
         <el-button type="primary" @click="getJson()">Send</el-button>
         <el-button type="primary" @click="clearSession()">ClearSession</el-button>
+        <el-button type="primary" @click="stretch()">Stretch</el-button>
       </el-col>
     </el-row>
     <h3></h3>
@@ -30,7 +31,7 @@
           </el-submenu>
         </el-menu>
       </el-col>
-      <el-col :span="10">
+      <el-col :span="middleSpan">
         <el-tabs v-model="activeName" @tab-click="handleClick" v-if="isShow">
           <el-tab-pane label="Parameters" name="first">
             <configManager :elements="elements" :entity="selectedEntity" :httpSource="httpSource" @sendRequestEvent="sendRequestEvent"></configManager>
@@ -40,7 +41,7 @@
           </el-tab-pane>
         </el-tabs>
       </el-col>
-      <el-col :span="9">
+      <el-col :span="rightSpan">
         <el-tabs v-model="activeName2" v-if="isShow">
           <el-tab-pane label="Model" name="first">
             <Modelview :elements="responses_json"></Modelview>
@@ -80,7 +81,9 @@ export default {
       index: 0,
       selectedEntity: null,
       httpSource: '',
-      jsonviewData: null
+      jsonviewData: null,
+      middleSpan: 18,
+      rightSpan: 1
     }
   },
   created() {
@@ -117,6 +120,15 @@ export default {
           sessionStorage.setItem('swaggerJson', JSON.stringify(me.resData))
           sessionStorage.setItem('leftList', JSON.stringify(tags))
         })
+    },
+    stretch() {
+      if (this.rightSpan === 1) {
+        this.rightSpan = 9
+        this.middleSpan = 10
+      } else {
+        this.rightSpan = 1
+        this.middleSpan = 18
+      }
     },
     sendRequestEvent(data, time) {
       this.activeName2 = 'second'
