@@ -37,7 +37,7 @@
             <configManager :elements="elements" :entity="selectedEntity" :httpSource="httpSource" @sendRequestEvent="sendRequestEvent"></configManager>
           </el-tab-pane>
           <el-tab-pane label="Test" name="second">
-            <generate :elements="elements"></generate>
+            <generate :elements="elements" :outputs="outputs"></generate>
           </el-tab-pane>
         </el-tabs>
       </el-col>
@@ -74,6 +74,7 @@ export default {
       tags: [],
       resData: null,
       elements: [],
+      outputs: [],
       isShow: false,
       activeName: 'first',
       activeName2: 'first',
@@ -106,8 +107,9 @@ export default {
       sessionStorage.setItem('rightForm', JSON.stringify(result))
       var responseData = indexservice.loadResponseData(this.resData, entity.path)
       this.responses_json = responseData.responses_json
+      this.outputs = [responseData.responses_swagger]
       localStorage.setItem('model_view_entity', JSON.stringify(responseData.responses_json))
-      console.table(this.responses_json)
+      console.table(this.outputs)
     },
     getJson() {
       const me = this

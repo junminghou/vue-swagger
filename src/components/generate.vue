@@ -23,7 +23,7 @@
         </div>
 
         <div style="display:none;">
-            <div ref="renderResults3" :title="element.description" v-for="element in elements" v-bind:key="element.name">
+            <div ref="renderResults3" :title="element.description" v-for="element in outputsComputed" v-bind:key="element.name">
             &lt;li&gt; &lt;span class="title"&gt;{{element.description}}：&lt;/span&gt; &lt;span class="content"&gt;{{element.nameformat}}&lt;/span&gt; &lt;/li&gt;
             </div>
         </div>
@@ -39,7 +39,15 @@ export default {
     props: {
         elements: {
             type: Array,
-            default: []
+            default: function () {
+                return []
+            }
+        },
+        outputs: {
+            type: Array,
+            default: function () {
+                return []
+            }
         },
         index: {
             type: Number
@@ -50,6 +58,33 @@ export default {
             filterPageKeys: '',
             renderResults: '',
             annotation: false
+        }
+    },
+    computed: {
+        outputsComputed: function () {
+            var elements = []
+            for (var i = 0; i < this.outputs.length; i++) {
+                var output = this.outputs[i]
+                if (output.constructor === Object) {
+                    for (var topkey in output) {
+                        var obj = output[topkey]
+                        if (obj.constructor === Object) {
+                            for (var key in obj) {
+                                if (key === 'Code' || key === 'Data' || key === 'Message' || key === 'ServerTime') {
+                                    continue
+                                }
+                                elements.push({
+                                    name: key,
+                                    nameformat: '{{' + key + '}}',
+                                    description: obj[key].description
+                                })
+                            }
+                        }
+                    }
+                }
+            }
+            console.log(elements)
+            return elements
         }
     },
     methods: {
