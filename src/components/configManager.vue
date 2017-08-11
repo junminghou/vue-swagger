@@ -19,8 +19,8 @@
                 </el-col>
                 <el-col :span="13">
                     <!--<el-select v-model="element.selected">
-                                                                            <el-option v-for="option in options" :key="option.key" :value="option.key" :label="option.value"></el-option>
-                                                                            </el-select>-->
+                                                                                                                                <el-option v-for="option in options" :key="option.key" :value="option.key" :label="option.value"></el-option>
+                                                                                                                                </el-select>-->
                     <el-input :placeholder="'请输入：' + element.description" v-model="element.value">
                         <template slot="append"> {{ element.in }}</template>
                     </el-input>
@@ -54,6 +54,10 @@ export default {
         httpSource: {
             type: String,
             default: ''
+        },
+        setheaders: {
+            type: Array,
+            default: []
         }
     },
     data() {
@@ -117,12 +121,26 @@ export default {
                 url = url + '?' + junming.EntityToUrl(query, true)
             }
 
+            axios.interceptors.request.use(function (config) {
+                // Do something before request is sent
+                return config
+            }, function (error) {
+                // Do something with request error
+                return Promise.reject(error)
+            })
+
+            var headers = {
+                UserToken: 1123
+            }
+            // headers['User-Agent'] = 'TTTTT'
+            // console.log(this.setheaders)
             var beginTime = new Date()
             if (me.entity.type === 'Get') {
-                axios.get(url)
-                    .then(function (response) {
-                        me.$emit('sendRequestEvent', response.data, computertime(beginTime))
-                    })
+                axios.get(url, {
+                    headers: headers
+                }).then(function (response) {
+                    me.$emit('sendRequestEvent', response.data, computertime(beginTime))
+                })
             } else if (me.entity.type === 'Post') {
                 axios.post(url, body)
                     .then(function (response) {

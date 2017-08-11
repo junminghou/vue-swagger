@@ -34,9 +34,12 @@
       <el-col :span="middleSpan">
         <el-tabs v-model="activeName" @tab-click="handleClick" v-if="isShow">
           <el-tab-pane label="Parameters" name="first">
-            <configManager :elements="elements" :entity="selectedEntity" :httpSource="httpSource" @sendRequestEvent="sendRequestEvent"></configManager>
+            <configManager :elements="elements" :entity="selectedEntity" :httpSource="httpSource" @sendRequestEvent="sendRequestEvent" :setheaders="setheadersArray"></configManager>
           </el-tab-pane>
-          <el-tab-pane label="Test" name="second">
+          <el-tab-pane label="Header" name="second">
+            <SetHeaders :elements="setheadersArray"></SetHeaders>
+          </el-tab-pane>
+          <el-tab-pane label="Test" name="san">
             <generate :elements="elements" :outputs="outputs"></generate>
           </el-tab-pane>
         </el-tabs>
@@ -65,6 +68,7 @@ import Jsonview from '../components/jsonview'
 import indexservice from '../business/indexservice'
 import { _created, _clearSession } from '../business/helloinit'
 import jsontoview from '../common/jsontoview'
+import SetHeaders from '../components/setheaders'
 
 export default {
   name: 'index',
@@ -84,7 +88,14 @@ export default {
       httpSource: '',
       jsonviewData: null,
       middleSpan: 18,
-      rightSpan: 1
+      rightSpan: 1,
+      setheadersArray: [
+        { name: '', value: '' },
+        { name: '', value: '' },
+        { name: '', value: '' },
+        { name: '', value: '' },
+        { name: '', value: '' }
+      ]
     }
   },
   created() {
@@ -144,7 +155,8 @@ export default {
     Generate,
     ConfigManager,
     Modelview,
-    Jsonview
+    Jsonview,
+    SetHeaders
   }
 }
 </script>
