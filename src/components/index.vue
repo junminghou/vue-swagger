@@ -113,8 +113,9 @@ export default {
     },
     getJson() {
       const me = this
+      me.tags = null
+      _clearSession()
       sessionStorage.setItem('inputUrl', me.input)
-
       axios.get(me.input)
         .then(function (response) {
           me.resData = response.data
