@@ -21,7 +21,7 @@
             <el-menu-item :index="'sub' + entity.index" v-for="entity in tag.paths" :key="tag.name + entity.type" @click="loadForm(entity)">
               <div>
                 <span>{{ entity.type }}</span>
-                <span> {{ entity.short_path }} </span>
+                <span> {{ entity.path }} </span>
               </div>
               <div>
                 <span> </span>
@@ -70,7 +70,7 @@ export default {
   name: 'index',
   data() {
     return {
-      input: 'http://fangapi.dev.apitops.com/building-center-web/api/v1/swagger.json',
+      input: 'http://orgapi.dev.apitops.com/organization-provider/v3/swagger',
       tags: [],
       resData: null,
       elements: [],

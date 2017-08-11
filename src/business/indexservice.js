@@ -63,41 +63,29 @@ export default {
             var tag = tags[i]
             tag.paths = []
             for (var key in paths) {
-                if (paths.hasOwnProperty(key)) {
-                    if (key.indexOf('/' + tag.name + '/') > -1) {
-                        var path = paths[key]
-                        var type = ''
-                        var summary = ''
-                        if (path.hasOwnProperty('get')) {
-                            type = 'Get'
-                            summary = path.get.summary
-                        } else if (path.hasOwnProperty('post')) {
-                            type = 'Post'
-                            summary = path.post.summary
-                        } else if (path.hasOwnProperty('put')) {
-                            type = 'Put'
-                            summary = path.put.summary
-                        } else if (path.hasOwnProperty('delete')) {
-                            type = 'Del'
-                            summary = path.delete.summary
-                        }
-                        if (summary === '' || summary === undefined || summary === null) {
-                            summary = '无描述'
-                        }
-
-                        var pathArray = key.split('/')
-                        pathArray.splice(0, 2)
-                        var shortpath = pathArray.join('/')
-
-                        var tagPath = {
-                            path: key,
-                            short_path: shortpath,
-                            type: type,
-                            summary: summary,
-                            index: ++index
-                        }
-                        tag.paths.push(tagPath)
+                var path = this.getProtocol(paths[key])
+                if (junming.IsNull(path)) {
+                    continue
+                }
+                if (!junming.IsNull(path.tags) && path.tags.indexOf(tag.name) > -1) {
+                    var type = this.getProtocolValue(paths[key])
+                    var summary = path.summary
+                    if (summary === '' || summary === undefined || summary === null) {
+                        summary = '无描述'
                     }
+
+                    var pathArray = key.split('/')
+                    pathArray.splice(0, 2)
+                    var shortpath = pathArray.join('/')
+
+                    var tagPath = {
+                        path: key,
+                        short_path: shortpath,
+                        type: type,
+                        summary: summary,
+                        index: ++index
+                    }
+                    tag.paths.push(tagPath)
                 }
             }
         }
@@ -118,6 +106,19 @@ export default {
         }
 
         return null
+    },
+    getProtocolValue(entity) {
+        var type = ''
+        if (entity.hasOwnProperty('get')) {
+            type = 'Get'
+        } else if (entity.hasOwnProperty('post')) {
+            type = 'Post'
+        } else if (entity.hasOwnProperty('put')) {
+            type = 'Put'
+        } else if (entity.hasOwnProperty('delete')) {
+            type = 'Del'
+        }
+        return type
     }
 }
 
