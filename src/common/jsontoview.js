@@ -1,13 +1,13 @@
 export default function jsontoview(responsedata) {
-      var result = { isroot: true, value: [] }
-      if (responsedata.constructor === Object) {
+    var result = { isroot: true, value: [] }
+    if (responsedata.constructor === Object) {
         result.type = 'object'
-      } else if (responsedata.constructor === Array) {
+    } else if (responsedata.constructor === Array) {
         result.type = 'array'
-      }
+    }
 
-      convert(responsedata, result.value)
-      return result
+    convert(responsedata, result.value)
+    return result
 }
 
 function convert(data, result) {
@@ -15,7 +15,11 @@ function convert(data, result) {
     for (var key in data) {
         var entity = {}
         var child = data[key]
-        if (child.constructor === Object) {
+        if (child === null) {
+            entity.key = key
+            entity.type = 0
+            entity.value = 'null'
+        } else if (child.constructor === Object) {
             entity.key = key
             entity.type = 2
             entity.children = {}
