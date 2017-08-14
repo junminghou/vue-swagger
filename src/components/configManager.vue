@@ -19,8 +19,8 @@
                 </el-col>
                 <el-col :span="13">
                     <!--<el-select v-model="element.selected">
-                                                                                                                                <el-option v-for="option in options" :key="option.key" :value="option.key" :label="option.value"></el-option>
-                                                                                                                                </el-select>-->
+                                                                                                                                                                    <el-option v-for="option in options" :key="option.key" :value="option.key" :label="option.value"></el-option>
+                                                                                                                                                                    </el-select>-->
                     <el-input :placeholder="'请输入：' + element.description" v-model="element.value">
                         <template slot="append"> {{ element.in }}</template>
                     </el-input>
@@ -129,11 +129,17 @@ export default {
                 return Promise.reject(error)
             })
 
-            var headers = {
-                UserToken: 1123
+            var headers = {}
+            if (!junming.IsNull(this.setheaders) && this.setheaders.length > 0) {
+                for (var j = 0; j < this.setheaders.length; j++) {
+                    var obj = this.setheaders[j]
+                    if (!junming.IsNullOrEmpty(obj.value)) {
+                        headers[obj.name] = obj.value
+                    }
+                }
             }
-            // headers['User-Agent'] = 'TTTTT'
-            // console.log(this.setheaders)
+            headers = { 'App-Key': '123' }
+            console.log(headers)
             var beginTime = new Date()
             if (me.entity.type === 'Get') {
                 axios.get(url, {
