@@ -19,8 +19,8 @@
                 </el-col>
                 <el-col :span="13">
                     <!--<el-select v-model="element.selected">
-                                                                                                                                                                    <el-option v-for="option in options" :key="option.key" :value="option.key" :label="option.value"></el-option>
-                                                                                                                                                                    </el-select>-->
+                                                                                                                                                                                                                        <el-option v-for="option in options" :key="option.key" :value="option.key" :label="option.value"></el-option>
+                                                                                                                                                                                                                        </el-select>-->
                     <el-input :placeholder="'请输入：' + element.description" v-model="element.value">
                         <template slot="append"> {{ element.in }}</template>
                     </el-input>
@@ -35,6 +35,7 @@
 
 <script>
 import axios from 'axios'
+import qs from 'qs'
 import junming from '../common/jmlib'
 
 export default {
@@ -121,14 +122,6 @@ export default {
                 url = url + '?' + junming.EntityToUrl(query, true)
             }
 
-            axios.interceptors.request.use(function (config) {
-                // Do something before request is sent
-                return config
-            }, function (error) {
-                // Do something with request error
-                return Promise.reject(error)
-            })
-
             var headers = {}
             if (!junming.IsNull(this.setheaders) && this.setheaders.length > 0) {
                 for (var j = 0; j < this.setheaders.length; j++) {
@@ -138,13 +131,16 @@ export default {
                     }
                 }
             }
-            headers = { 'App-Key': '123' }
-            console.log(headers)
+            var data = {
+                method: '',
+                url: url,
+                headers: headers,
+                body: ''
+            }
             var beginTime = new Date()
             if (me.entity.type === 'Get') {
-                axios.get(url, {
-                    headers: headers
-                }).then(function (response) {
+                data.method = 'get'
+                axios.post('/api/requestapi', data).then(function (response) {
                     me.$emit('sendRequestEvent', response.data, computertime(beginTime))
                 })
             } else if (me.entity.type === 'Post') {

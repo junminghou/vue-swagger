@@ -147,8 +147,8 @@ export default {
     },
     sendRequestEvent(data, time) {
       this.activeName2 = 'second'
-      data['Api耗时'] = time + 'ms'
-      this.jsonviewData = jsontoview(data)
+      var result = Object.assign({}, { 'Api耗时': time + 'ms' }, data)
+      this.jsonviewData = jsontoview(result)
     }
   },
   components: {

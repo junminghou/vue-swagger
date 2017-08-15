@@ -23,19 +23,27 @@ var proxyTable = config.dev.proxyTable
 
 var app = express()
 var compiler = webpack(webpackConfig)
+var bodyParser = require("body-parser")
+
+app.use(bodyParser.urlencoded({
+  extended: true
+}))
+app.use(bodyParser.json())
 
 var apiRoutes = express.Router()
-apiRoutes.get('/getLocalFile', function (req, res) {
-  // 请求的例子：
-  const url = 'http://orgapi.test.apitops.com/organization-provider/v3/region/getChilds?regionId=112'
-  return axios.get(url,{
-    headers: {
-      'App-Key': '1231525235'
-    }
+apiRoutes.post('/requestapi', function (req, res, ttt) {
+  if (!req.body) {
+    res.json(null)
+    return
+  }
+  var params = req.body
+  axios({
+    url: params.url,
+    method: params.method,
+    headers: params.headers,
+    data: params.body
   }).then((response) => {
     res.json(response.data)
-    // console.log(res.data)
-    //  return Promise.resolve(res.data)
   }).catch((e) => {
     console.log(e)
   })
