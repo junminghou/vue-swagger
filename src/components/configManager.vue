@@ -19,8 +19,8 @@
                 </el-col>
                 <el-col :span="13">
                     <!--<el-select v-model="element.selected">
-                                                                                                                                                                                                                        <el-option v-for="option in options" :key="option.key" :value="option.key" :label="option.value"></el-option>
-                                                                                                                                                                                                                        </el-select>-->
+                                                                                                                                                                                                                                        <el-option v-for="option in options" :key="option.key" :value="option.key" :label="option.value"></el-option>
+                                                                                                                                                                                                                                        </el-select>-->
                     <el-input :placeholder="'请输入：' + element.description" v-model="element.value">
                         <template slot="append"> {{ element.in }}</template>
                     </el-input>
@@ -122,6 +122,22 @@ export default {
                 url = url + '?' + junming.EntityToUrl(query, true)
             }
 
+            if (url.indexOf('orgapi.') > -1) {
+                var hasValue = false
+                for (var k = 0; k < this.setheaders.length; k++) {
+                    var objnew = this.setheaders[k]
+                    if (!junming.IsNullOrEmpty(objnew.value) && !junming.IsNullOrEmpty(objnew.name)) {
+                        if (objnew.name === 'App-Key') {
+                            hasValue = true
+                            break
+                        }
+                    }
+                }
+                if (!hasValue) {
+                    this.setheaders.push({ name: 'App-Key', value: '553dc55d0dd04e8fbb73cde303a1e02c' })
+                }
+            }
+
             var headers = {}
             if (!junming.IsNull(this.setheaders) && this.setheaders.length > 0) {
                 for (var j = 0; j < this.setheaders.length; j++) {
@@ -131,6 +147,7 @@ export default {
                     }
                 }
             }
+
             var data = {
                 method: '',
                 url: url,
