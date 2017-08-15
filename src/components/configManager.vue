@@ -122,7 +122,7 @@ export default {
                 url = url + '?' + junming.EntityToUrl(query, true)
             }
 
-            if (url.indexOf('orgapi.') > -1) {
+            if (url.indexOf('/organization-provider/') > -1) {
                 var hasValue = false
                 for (var k = 0; k < this.setheaders.length; k++) {
                     var objnew = this.setheaders[k]
